@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://2048.io/ -->
+<html lang="en" manifest="cache.appcache">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>2048.io</title>
+
+    <link href="./css/main.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="http://2048.io/favicon.ico">
+    <link rel="apple-touch-icon" href="http://2048.io/meta/apple-touch-icon.png">
+    <link rel="apple-touch-startup-image" href="http://2048.io/meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPhone 5+ -->
+    <link rel="apple-touch-startup-image" href="http://2048.io/meta/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPhone, retina -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="format-detection" content="telephone=no">
+
+    <meta name="apple-itunes-app" content="app-id=868076805">
+
+    <meta property="og:title" content="2048">
+    <meta property="og:site_name" content="2048">
+    <meta property="og:description" content="Join the numbers and get to the 2048 tile! Careful: this game is extremely addictive!">
+    <meta property="og:image" content="http://gabrielecirulli.github.io/2048/meta/og_image.png">
+
+    <meta name="twitter:card" content="app">
+    <meta name="twitter:site" content="@gabrielecirulli">
+    <meta name="twitter:title" content="2048">
+    <meta name="twitter:description" content="Join the numbers and get to the 2048 tile! Careful: this game is extremely addictive!">
+    <meta name="twitter:image" content="http://gabrielecirulli.github.io/2048/meta/og_image.png">
+    <meta name="twitter:url" content="http://2048.io/">
+    <meta name="twitter:app:country" content="US">
+    <meta name="twitter:app:name:iphone" content="2048">
+    <meta name="twitter:app:id:iphone" content="868076805">
+    <meta name="twitter:app:url:iphone" content="https://itunes.apple.com/us/app/2048-by-gabriele-cirulli/id868076805">
+    <meta name="twitter:app:name:ipad" content="2048">
+    <meta name="twitter:app:id:ipad" content="868076805">
+    <meta name="twitter:app:url:ipad" content="https://itunes.apple.com/us/app/2048-by-gabriele-cirulli/id868076805">
+    <meta name="twitter:app:name:googleplay" content="2048">
+    <meta name="twitter:app:id:googleplay" content="com.gabrielecirulli.app2048">
+    <meta name="twitter:app:url:googleplay" content="https://play.google.com/store/apps/details?id=com.gabrielecirulli.app2048">
+    <script charset="utf-8" src="./js/button.1378e6a69a23712ca26755ee3c4084b4.js"></script>
+</head>
+
+<body>
+    <div class="outerContainer">
+        <div class="container">
+            <div class="heading">
+                <h1 class="title">
+                    <a class="title-link" href="#">2048<span class="title-link-shade">.io</span></a>
+                </h1>
+                <div class="scores-container">
+                    <div class="score-container">0</div>
+                    <div class="best-container">0</div>
+                </div>
+            </div>
+
+            <div class="above-game">
+                <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+                <a class="restart-button">New Game</a>
+            </div>
+
+            <div class="game-container">
+                <div class="game-message">
+                    <p></p>
+                    <div class="lower">
+                        <a class="keep-playing-button">Keep going</a>
+                        <a class="retry-button">Try again</a>
+                        <div class="score-sharing"></div>
+                        <div class="message-appendix">
+                            <div><strong>Узнайте человеческий возраст своего кота!</strong></div>
+                            <a href="http://sosi.ski/" class="sosiski-link" target="_blank">sosi.ski</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-container">
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                </div>
+
+                <div class="tile-container">
+                    <div class="tile tile-2 tile-position-2-1 tile-new">
+                        <div class="tile-inner">2</div>
+                    </div>
+                    <div class="tile tile-2 tile-position-2-3 tile-new">
+                        <div class="tile-inner">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="game-explanation">
+                <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
+            </p>
+            <hr>
+            <p>Clone from <a href="http://2048.io/">2048.io</a> by <a href="https://github.com/jet2511" target="_blank">Tuyen Ha Le</a>. Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo
+                    Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by
+                    Asher
+                    Vollmer.</a>
+            </p>
+            <div class="sharing">
+
+                <a href="https://twitter.com/tuyenuknow?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow me on Twitter</a>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+                <!-- Place this tag where you want the button to render. -->
+                <a class="github-button" href="https://github.com/jet2511" data-color-scheme="no-preference: light; light: light; dark: dark;" aria-label="Follow @jet2511 on GitHub">Follow @jet2511</a>
+
+                <!-- Place this tag in your head or just before your close body tag. -->
+                <script async defer src="https://buttons.github.io/buttons.js"></script>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/bind_polyfill.js"></script>
+    <script src="./js/classlist_polyfill.js"></script>
+    <script src="./js/animframe_polyfill.js"></script>
+    <script src="./js/keyboard_input_manager.js"></script>
+    <script src="./js/html_actuator.js"></script>
+    <script src="./js/grid.js"></script>
+    <script src="./js/tile.js"></script>
+    <script src="./js/local_storage_manager.js"></script>
+    <script src="./js/game_manager.js"></script>
+    <script src="./js/application.js"></script>
+
+    <script type="text/javascript">
+        try {
+            var isInFrame = window.self !== window.top;
+        } catch (e) {
+            isInFrame = true;
+        }
+
+        if (isInFrame) {
+            var titleLink = document.querySelector('.title-link');
+            titleLink.setAttribute('target', '_blank');
+        }
+    </script>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(d, w, c) {
+            (w[c] = w[c] || []).push(function() {
+                try {
+                    w.yaCounter31048201 = w.yandexMetrika = new Ya.Metrika({
+                        id: 31048201,
+                        clickmap: true,
+                        trackLinks: true,
+                        accurateTrackBounce: true,
+                        webvisor: true
+                    });
+                } catch (e) {}
+            });
+
+            var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function() {
+                    n.parentNode.insertBefore(s, n);
+                };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+            if (w.opera == "[object Opera]") {
+                d.addEventListener("DOMContentLoaded", f, false);
+            } else {
+                f();
+            }
+        })(document, window, "yandex_metrika_callbacks");
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/31048201" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
+
+</body>
+
+</html>
