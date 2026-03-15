@@ -8,10 +8,14 @@ A minimalist and polished clone of the famous 2048 game. Join the numbers and ge
 Play it here: [https://jet2511.github.io/2048/](https://jet2511.github.io/2048/)
 
 ## ✨ Features
-- **Polished Gameplay**: Smooth animations and responsive controls.
-- **Mobile Friendly**: Fully responsive design for playing on smartphones and tablets.
-- **Auto-Save**: Game state is saved automatically, so you can pick up where you left off.
-- **Clean Code**: Refactored and cleaned up, removing unnecessary analytics and external scripts.
+- **Multiple Grid Sizes**: Choose from 3x3, 4x4, 5x5, or 6x6 grids for different challenge levels.
+- **Independent High Scores**: Best scores are tracked and saved separately for each grid size.
+- **Undo Move**: Made a mistake? Undo your last moves (with a small score penalty for balance!).
+- **Reverse Undo Animation**: Fluid reverse movement when undoing, making the experience extra smooth.
+- **Modern Dark Mode**: Full-page dark mode support with a refined, professional color palette.
+- **Aesthetic Typography**: Upgraded to modern fonts (Lexend, Outfit, Inter) for better readability.
+- **Polished UX**: Persistent settings, confirmation dialogs, and a perfectly aligned header.
+- **Mobile Friendly**: Fully responsive design for playing on any device.
 
 ## 🛠️ How to Play
 1. Use your **Arrow Keys** (or swipe on mobile) to move the tiles.

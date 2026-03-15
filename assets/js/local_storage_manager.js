@@ -42,12 +42,14 @@ export default class LocalStorageManager {
     }
 
     // Best score getters/setters
-    getBestScore() {
-        return this.storage.getItem(this.bestScoreKey) || 0;
+    getBestScore(size) {
+        size = size || 4; // Default to 4
+        return this.storage.getItem(this.bestScoreKey + "_" + size) || 0;
     }
 
-    setBestScore(score) {
-        this.storage.setItem(this.bestScoreKey, score);
+    setBestScore(score, size) {
+        size = size || 4;
+        this.storage.setItem(this.bestScoreKey + "_" + size, score);
     }
 
     // Game state getters/setters and clearing
@@ -70,5 +72,13 @@ export default class LocalStorageManager {
 
     getNoticeClosed() {
         return JSON.parse(this.storage.getItem(this.noticeClosedKey) || "false");
+    }
+
+    setItem(key, value) {
+        this.storage.setItem(key, value);
+    }
+
+    getItem(key) {
+        return this.storage.getItem(key);
     }
 }

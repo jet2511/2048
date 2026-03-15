@@ -3,23 +3,65 @@ import Tile from "./tile.js";
 
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager) {
-        this.size = size; // Size of the grid
-        this.inputManager = new InputManager();
         this.storageManager = new StorageManager();
+        this.size = this.storageManager.getItem("gridSize") || size; // Size of the grid
+        this.inputManager = new InputManager();
         this.actuator = new Actuator();
 
         this.startTiles = 2;
+        this.history = [];
+        this.historyLimit = 15;
+        this.nextId = 0;
 
         this.inputManager.on("move", this.move.bind(this));
         this.inputManager.on("restart", this.restart.bind(this));
         this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+        this.inputManager.on("undo", this.undo.bind(this));
+        this.inputManager.on("changeSize", this.changeSize.bind(this));
+        this.inputManager.on("changeTheme", this.changeTheme.bind(this));
+        this.inputManager.on("toggleSettings", this.toggleSettings.bind(this));
 
         this.setup();
+        this.applyTheme();
+    }
+
+    applyTheme() {
+        const theme = this.storageManager.getItem("theme") || "light";
+        this.actuator.setDarkMode(theme === "dark");
+    }
+
+    changeTheme() {
+        const currentTheme = this.storageManager.getItem("theme") || "light";
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        this.storageManager.setItem("theme", newTheme);
+        this.actuator.setDarkMode(newTheme === "dark");
+    }
+
+    changeSize(size) {
+        if (size === this.size) return;
+
+        const confirmChange = confirm("Dữ liệu hiện tại sẽ bị mất khi bạn đổi kích thước màn chơi. Bạn có chắc chắn muốn tiếp tục?");
+        
+        if (confirmChange) {
+            this.size = size;
+            this.storageManager.setItem("gridSize", size);
+            this.restart();
+        } else {
+            // Un-highlight/re-highlight the correct one if needed, 
+            // but usually the UI stays on the menu so the user can see it.
+            this.actuator.updateSizeHighlight(this.size);
+        }
+    }
+
+    toggleSettings() {
+        this.actuator.toggleSettings();
+        this.actuator.updateSizeHighlight(this.size);
     }
 
     // Restart the game
     restart() {
         this.storageManager.clearGameState();
+        this.history = [];
         this.actuator.continueGame(); // Clear the game won/lost message
         this.setup();
     }
@@ -41,7 +83,8 @@ export default class GameManager {
 
         // Reload the game from a previous game if present
         if (previousState) {
-            this.grid = new Grid(previousState.grid.size,
+            this.size = previousState.grid.size; // Sync size with loaded state
+            this.grid = new Grid(this.size,
                 previousState.grid.cells); // Reload grid
             this.score = previousState.score;
             this.over = previousState.over;
@@ -59,6 +102,8 @@ export default class GameManager {
         }
 
         // Update the actuator
+        this.actuator.setupGrid(this.size);
+        this.actuator.updateSizeHighlight(this.size);
         this.actuate();
     }
 
@@ -73,7 +118,7 @@ export default class GameManager {
     addRandomTile() {
         if (this.grid.cellsAvailable()) {
             var value = Math.random() < 0.9 ? 2 : 4;
-            var tile = new Tile(this.grid.randomAvailableCell(), value);
+            var tile = new Tile(this.grid.randomAvailableCell(), value, this.nextId++);
 
             this.grid.insertTile(tile);
         }
@@ -81,8 +126,8 @@ export default class GameManager {
 
     // Sends the updated grid to the actuator
     actuate() {
-        if (this.storageManager.getBestScore() < this.score) {
-            this.storageManager.setBestScore(this.score);
+        if (this.storageManager.getBestScore(this.size) < this.score) {
+            this.storageManager.setBestScore(this.score, this.size);
         }
 
         // Clear the state when the game is over (game over only, not win)
@@ -96,7 +141,7 @@ export default class GameManager {
             score: this.score,
             over: this.over,
             won: this.won,
-            bestScore: this.storageManager.getBestScore(),
+            bestScore: this.storageManager.getBestScore(this.size),
             terminated: this.isGameTerminated()
         });
     }
@@ -142,6 +187,9 @@ export default class GameManager {
         var traversals = this.buildTraversals(vector);
         var moved = false;
 
+        // Capture current state before move
+        var previousState = this.serialize();
+
         // Save the current tile positions and remove merger information
         this.prepareTiles();
 
@@ -157,7 +205,7 @@ export default class GameManager {
 
                     // Only one merger per row traversal?
                     if (next && next.value === tile.value && !next.mergedFrom) {
-                        var merged = new Tile(positions.next, tile.value * 2);
+                        var merged = new Tile(positions.next, tile.value * 2, tile.id); // Keep the ID of the moving tile
                         merged.mergedFrom = [tile, next];
 
                         self.grid.insertTile(merged);
@@ -183,6 +231,12 @@ export default class GameManager {
         });
 
         if (moved) {
+            // Save to history
+            this.history.push(previousState);
+            if (this.history.length > this.historyLimit) {
+                this.history.shift();
+            }
+
             this.addRandomTile();
 
             if (!this.movesAvailable()) {
@@ -191,6 +245,38 @@ export default class GameManager {
 
             this.actuate();
         }
+    }
+
+    undo() {
+        if (this.history.length === 0) return;
+
+        // Current tiles' positions to animate back FROM
+        var currentPositions = {};
+        this.grid.eachCell(function(x, y, tile) {
+            if (tile) {
+                currentPositions[tile.id] = { x: x, y: y };
+            }
+        });
+
+        var state = this.history.pop();
+
+        this.grid = new Grid(state.grid.size, state.grid.cells);
+        
+        // Restore previous positions for animation
+        this.grid.eachCell(function(x, y, tile) {
+            if (tile && currentPositions[tile.id]) {
+                tile.previousPosition = currentPositions[tile.id];
+            }
+        });
+
+        // Apply 100 point penalty for Undo
+        this.score = Math.max(0, state.score - 100);
+        
+        this.over = state.over;
+        this.won = state.won;
+        this.keepPlaying = state.keepPlaying;
+
+        this.actuate();
     }
 
     // Get the vector representing the chosen direction

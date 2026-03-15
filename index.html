@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Outfit:wght@400;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Lexend:wght@400;700;800&family=Outfit:wght@400;700;800&display=swap"
         rel="stylesheet">
 
     <link href="./assets/css/main.css" rel="stylesheet" type="text/css">
@@ -54,7 +54,16 @@
 
             <div class="above-game">
                 <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-                <a class="restart-button">New Game</a>
+                <div class="buttons-container">
+                    <a class="settings-toggle" title="Settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </a>
+                    <a class="undo-button">Undo</a>
+                    <a class="restart-button">New Game</a>
+                </div>
             </div>
 
             <div class="game-container">
@@ -68,33 +77,27 @@
                 </div>
 
                 <div class="grid-container">
-                    <div class="grid-row">
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                        <div class="grid-cell"></div>
-                    </div>
                 </div>
 
                 <div class="tile-container"></div>
+            </div>
+
+            <div class="settings-panel">
+                <div class="game-settings">
+                    <div class="setting-item">
+                        <span>Grid Size:</span>
+                        <div class="size-options">
+                            <a class="size-option" data-size="3">3x3</a>
+                            <a class="size-option active" data-size="4">4x4</a>
+                            <a class="size-option" data-size="5">5x5</a>
+                            <a class="size-option" data-size="6">6x6</a>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <span>Theme:</span>
+                        <a class="theme-toggle">Dark Mode</a>
+                    </div>
+                </div>
             </div>
 
             <p class="game-explanation">

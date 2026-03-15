@@ -70,12 +70,25 @@ export default class KeyboardInputManager {
             if (!modifiers && event.which === 82) {
                 self.restart.call(self, event);
             }
+
+            // Z or U key undos the move
+            if (!modifiers && (event.which === 90 || event.which === 85)) {
+                self.undo.call(self, event);
+            }
         });
 
         // Respond to button presses
         this.bindButtonPress(".retry-button", this.restart);
         this.bindButtonPress(".restart-button", this.restart);
+        this.bindButtonPress(".undo-button", this.undo);
         this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+        this.bindButtonPress(".theme-toggle", this.themeToggle);
+        this.bindButtonPress(".settings-toggle", this.settingsToggle);
+
+        this.bindAll(".size-option", function(event) {
+            var size = parseInt(event.target.getAttribute("data-size"));
+            self.emit("changeSize", size);
+        });
 
         // Respond to swipe events
         var touchStartClientX, touchStartClientY;
@@ -143,6 +156,30 @@ export default class KeyboardInputManager {
     keepPlaying(event) {
         event.preventDefault();
         this.emit("keepPlaying");
+    }
+
+    undo(event) {
+        event.preventDefault();
+        this.emit("undo");
+    }
+
+    themeToggle(event) {
+        event.preventDefault();
+        this.emit("changeTheme");
+    }
+
+    settingsToggle(event) {
+        event.preventDefault();
+        this.emit("toggleSettings");
+    }
+
+    bindAll(selector, fn) {
+        var elements = document.querySelectorAll(selector);
+        var self = this;
+        elements.forEach(function(element) {
+            element.addEventListener("click", fn.bind(self));
+            element.addEventListener(self.eventTouchend, fn.bind(self));
+        });
     }
 
     bindButtonPress(selector, fn) {

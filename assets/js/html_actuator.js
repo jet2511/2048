@@ -1,12 +1,60 @@
 export default class HTMLActuator {
     constructor() {
         this.tileContainer = document.querySelector(".tile-container");
+        this.gridContainer = document.querySelector(".grid-container");
+        this.settingsPanel = document.querySelector(".settings-panel");
         this.scoreContainer = document.querySelector(".score-container");
         this.bestContainer = document.querySelector(".best-container");
         this.messageContainer = document.querySelector(".game-message");
         this.sharingContainer = document.querySelector(".score-sharing");
 
         this.score = 0;
+    }
+
+    toggleSettings() {
+        this.settingsPanel.classList.toggle("is-open");
+    }
+
+    updateSizeHighlight(size) {
+        var options = document.querySelectorAll(".size-option");
+        options.forEach(function(opt) {
+            if (parseInt(opt.getAttribute("data-size")) === size) {
+                opt.classList.add("active");
+            } else {
+                opt.classList.remove("active");
+            }
+        });
+    }
+
+    // Set up the grid background based on size
+    setupGrid(size) {
+        this.clearContainer(this.gridContainer);
+
+        for (var i = 0; i < size; i++) {
+            var row = document.createElement("div");
+            row.classList.add("grid-row");
+
+            for (var j = 0; j < size; j++) {
+                var cell = document.createElement("div");
+                cell.classList.add("grid-cell");
+                row.appendChild(cell);
+            }
+
+            this.gridContainer.appendChild(row);
+        }
+
+        this.updateCSSVars(size);
+    }
+
+    updateCSSVars(size) {
+        const root = document.documentElement;
+        const spacing = 15; // px
+        const containerSize = 500; // px
+        const tileSize = (containerSize - (spacing * (size + 1))) / size;
+
+        root.style.setProperty('--grid-row-cells', size);
+        root.style.setProperty('--tile-size', tileSize + 'px');
+        root.style.setProperty('--tile-margin', spacing + 'px');
     }
 
     actuate(grid, metadata) {
@@ -53,10 +101,11 @@ export default class HTMLActuator {
         var wrapper = document.createElement("div");
         var inner = document.createElement("div");
         var position = tile.previousPosition || { x: tile.x, y: tile.y };
-        var positionClass = this.positionClass(position);
+        
+        wrapper.style.transform = this.getTranslate(position);
 
         // We can't use classlist because it somehow glitches when replacing classes
-        var classes = ["tile", "tile-" + tile.value, positionClass];
+        var classes = ["tile", "tile-" + tile.value];
 
         if (tile.value > 2048) classes.push("tile-super");
 
@@ -68,8 +117,7 @@ export default class HTMLActuator {
         if (tile.previousPosition) {
             // Make sure that the tile gets rendered in the previous position first
             window.requestAnimationFrame(function() {
-                classes[2] = self.positionClass({ x: tile.x, y: tile.y });
-                self.applyClasses(wrapper, classes); // Update the position
+                wrapper.style.transform = self.getTranslate({ x: tile.x, y: tile.y });
             });
         } else if (tile.mergedFrom) {
             classes.push("tile-merged");
@@ -91,17 +139,14 @@ export default class HTMLActuator {
         this.tileContainer.appendChild(wrapper);
     }
 
+    getTranslate(position) {
+        const x = position.x;
+        const y = position.y;
+        return `translate(calc(${x} * (var(--tile-size) + var(--tile-margin)) + var(--tile-margin)), calc(${y} * (var(--tile-size) + var(--tile-margin)) + var(--tile-margin)))`;
+    }
+
     applyClasses(element, classes) {
         element.setAttribute("class", classes.join(" "));
-    }
-
-    normalizePosition(position) {
-        return { x: position.x + 1, y: position.y + 1 };
-    }
-
-    positionClass(position) {
-        position = this.normalizePosition(position);
-        return "tile-position-" + position.x + "-" + position.y;
     }
 
     updateScore(score) {
@@ -140,6 +185,16 @@ export default class HTMLActuator {
         // IE only takes one value to remove at a time.
         this.messageContainer.classList.remove("game-won");
         this.messageContainer.classList.remove("game-over");
+    }
+
+    setDarkMode(enabled) {
+        if (enabled) {
+            document.body.classList.add("dark-mode");
+            document.querySelector(".theme-toggle").textContent = "Light Mode";
+        } else {
+            document.body.classList.remove("dark-mode");
+            document.querySelector(".theme-toggle").textContent = "Dark Mode";
+        }
     }
 
     scoreTweetButton() {

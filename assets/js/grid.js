@@ -29,7 +29,7 @@ export default class Grid {
 
             for (var y = 0; y < this.size; y++) {
                 var tile = state[x][y];
-                row.push(tile ? new Tile(tile.position, tile.value) : null);
+                row.push(tile ? new Tile(tile.position, tile.value, tile.id) : null);
             }
         }
 
