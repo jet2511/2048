@@ -1,0 +1,233 @@
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+h1.title {
+    font-size: 68px;
+    font-weight: bold;
+    margin: 0;
+    display: block;
+}
+
+h1.title .title-link {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+h1.title .title-link-shade {
+    color: hsl(29, 17%, 68%);
+}
+
+.scores-container {
+    text-align: right;
+    display: flex;
+    gap: 5px;
+}
+
+.score-container,
+.best-container {
+    position: relative;
+    display: inline-block;
+    background: var(--field-bg);
+    padding: 15px 25px;
+    font-size: 25px;
+    height: 25px;
+    line-height: 47px;
+    font-weight: bold;
+    border-radius: 3px;
+    color: white;
+    margin-top: 8px;
+    text-align: center;
+    min-width: 40px;
+}
+
+.score-container:after,
+.best-container:after {
+    position: absolute;
+    width: 100%;
+    top: 10px;
+    left: 0;
+    text-transform: uppercase;
+    font-size: 13px;
+    line-height: 13px;
+    text-align: center;
+    color: #eee4da;
+}
+
+.score-container:after {
+    content: "Score";
+}
+
+.best-container:after {
+    content: "Best";
+}
+
+.score-container .score-addition {
+    position: absolute;
+    right: 30px;
+    font-size: 25px;
+    line-height: 25px;
+    font-weight: bold;
+    color: rgba(119, 110, 101, 0.9);
+    z-index: 100;
+}
+
+.above-game {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.game-intro {
+    margin: 0;
+    line-height: 1.4;
+    margin-right: auto;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.settings-toggle, .undo-button, .restart-button, .size-option, .theme-toggle {
+    background: #8f7a66;
+    border-radius: 3px;
+    padding: 0 20px;
+    color: #f9f6f2;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s, transform 0.1s;
+    border: none;
+    height: 42px;
+    line-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.settings-toggle {
+    padding: 0 !important;
+    width: 42px;
+}
+
+.settings-toggle svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.4s ease;
+}
+
+.settings-toggle:hover svg {
+    transform: rotate(90deg);
+}
+
+.settings-toggle:hover, .undo-button:hover, .restart-button:hover, .size-option:hover, .theme-toggle:hover {
+    background: #7f6a56;
+}
+
+.settings-toggle:active, .undo-button:active, .restart-button:active, .size-option:active, .theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.settings-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background: var(--field-bg);
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+.settings-panel.is-open {
+    max-height: 200px;
+    margin-bottom: 20px;
+}
+
+.game-settings {
+    padding: 20px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.size-options {
+    display: flex;
+    gap: 10px;
+}
+
+.size-option.active {
+    background: var(--tile-gold);
+    color: #776e65;
+}
+
+.game-explanation {
+    margin-top: 50px;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    line-height: 1.65;
+}
+
+a {
+    color: #776e65;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+body.dark-mode a {
+    color: var(--text-color);
+}
+
+hr {
+    border: none;
+    border-bottom: 1px solid #d8d4d0;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.app-notice {
+    position: relative;
+    background: #edc53f;
+    color: white;
+    padding: 18px;
+    margin-top: 30px;
+    height: 56px;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+@media screen and (max-width: 520px) {
+    h1.title {
+        font-size: 27px;
+        margin-top: 15px;
+    }
+    .score-container, .best-container {
+        margin-top: 0;
+        padding: 15px 10px;
+    }
+    .game-intro {
+        width: 55%;
+        display: block;
+        line-height: 1.65;
+    }
+    .restart-button {
+        width: 42%;
+        padding: 0;
+        display: block;
+        margin-top: 2px;
+    }
+}

@@ -1,0 +1,113 @@
+@keyframes move-up {
+    0% {
+        top: 25px;
+        opacity: 1;
+    }
+    100% {
+        top: -50px;
+        opacity: 0;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    0% {
+        margin-top: 32%;
+    }
+    100% {
+        margin-top: 20%;
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes pop-in-big {
+    0% {
+        transform: scale(0) translateZ(0);
+        opacity: 0;
+        margin-top: -56px;
+    }
+    100% {
+        transform: scale(1) translateZ(0);
+        opacity: 1;
+        margin-top: 30px;
+    }
+}
+
+@keyframes pop-in-small {
+    0% {
+        transform: scale(0) translateZ(0);
+        opacity: 0;
+        margin-top: -76px;
+    }
+    100% {
+        transform: scale(1) translateZ(0);
+        opacity: 1;
+        margin-top: 10px;
+    }
+}
+
+.score-container .score-addition {
+    animation: move-up 600ms ease-in both;
+}
+
+.game-message {
+    animation: fade-in 800ms ease 1200ms both;
+}
+
+.game-message.game-won p,
+.game-message.game-over p {
+    animation: slide-up 1.5s ease-in-out 2500ms both;
+}
+
+.game-message.game-won .message-appendix,
+.game-message.game-over .message-appendix.visible {
+    animation: fade-in 1.5s ease-in-out 2500ms both;
+}
+
+.tile-new .tile-inner {
+    animation: appear 200ms ease 100ms backwards;
+}
+
+.tile-merged .tile-inner {
+    animation: pop 200ms ease 100ms backwards;
+}
+
+.app-notice {
+    animation: pop-in-big 700ms ease 2s both;
+}
+
+@media screen and (max-width: 520px) {
+    .app-notice {
+        animation: pop-in-small 700ms ease 2s both;
+    }
+}
