@@ -3,7 +3,7 @@ export default class KeyboardInputManager {
         this.events = {};
 
         if (window.navigator.msPointerEnabled) {
-            //Internet Explorer 10 style
+            // Internet Explorer 10 style
             this.eventTouchstart = "MSPointerDown";
             this.eventTouchmove = "MSPointerMove";
             this.eventTouchend = "MSPointerUp";
@@ -24,18 +24,16 @@ export default class KeyboardInputManager {
     }
 
     emit(event, data) {
-        var callbacks = this.events[event];
+        const callbacks = this.events[event];
         if (callbacks) {
-            callbacks.forEach(function(callback) {
+            callbacks.forEach(callback => {
                 callback(data);
             });
         }
     }
 
     listen() {
-        var self = this;
-
-        var map = {
+        const map = {
             38: 0, // Up
             39: 1, // Right
             40: 2, // Down
@@ -51,54 +49,54 @@ export default class KeyboardInputManager {
         };
 
         // Respond to direction keys
-        document.addEventListener("keydown", function(event) {
-            var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
+        document.addEventListener("keydown", event => {
+            const modifiers = event.altKey || event.ctrlKey || event.metaKey ||
                 event.shiftKey;
-            var mapped = map[event.which];
+            const mapped = map[event.which];
 
             // Ignore the event if it's happening in a text field
-            if (self.targetIsInput(event)) return;
+            if (this.targetIsInput(event)) return;
 
             if (!modifiers) {
                 if (mapped !== undefined) {
                     event.preventDefault();
-                    self.emit("move", mapped);
+                    this.emit("move", mapped);
                 }
             }
 
             // R key restarts the game
             if (!modifiers && event.which === 82) {
-                self.restart.call(self, event);
+                this.restart(event);
             }
 
             // Z or U key undos the move
             if (!modifiers && (event.which === 90 || event.which === 85)) {
-                self.undo.call(self, event);
+                this.undo(event);
             }
         });
 
         // Respond to button presses
-        this.bindButtonPress(".retry-button", this.restart);
-        this.bindButtonPress(".restart-button", this.restart);
-        this.bindButtonPress(".undo-button", this.undo);
-        this.bindButtonPress(".keep-playing-button", this.keepPlaying);
-        this.bindButtonPress(".theme-toggle", this.themeToggle);
-        this.bindButtonPress(".settings-toggle", this.settingsToggle);
+        this.bindButtonPress(".retry-button", this.restart.bind(this));
+        this.bindButtonPress(".restart-button", this.restart.bind(this));
+        this.bindButtonPress(".undo-button", this.undo.bind(this));
+        this.bindButtonPress(".keep-playing-button", this.keepPlaying.bind(this));
+        this.bindButtonPress(".theme-toggle", this.themeToggle.bind(this));
+        this.bindButtonPress(".settings-toggle", this.settingsToggle.bind(this));
 
-        this.bindAll(".size-option", function(event) {
-            var size = parseInt(event.target.getAttribute("data-size"));
-            self.emit("changeSize", size);
+        this.bindAll(".size-option", event => {
+            const size = parseInt(event.target.getAttribute("data-size"));
+            this.emit("changeSize", size);
         });
 
         // Respond to swipe events
-        var touchStartClientX, touchStartClientY;
-        var gameContainer = document.getElementsByClassName("game-container")[0];
+        let touchStartClientX, touchStartClientY;
+        const gameContainer = document.getElementsByClassName("game-container")[0];
 
-        gameContainer.addEventListener(this.eventTouchstart, function(event) {
+        gameContainer.addEventListener(this.eventTouchstart, event => {
             if ((!window.navigator.msPointerEnabled && event.touches.length > 1) ||
                 event.targetTouches.length > 1 ||
-                self.targetIsInput(event) ||
-                self.targetIsLink(event)) {
+                this.targetIsInput(event) ||
+                this.targetIsLink(event)) {
                 return; // Ignore if touching with more than 1 finger or touching input
             }
 
@@ -113,19 +111,19 @@ export default class KeyboardInputManager {
             event.preventDefault();
         });
 
-        gameContainer.addEventListener(this.eventTouchmove, function(event) {
+        gameContainer.addEventListener(this.eventTouchmove, event => {
             event.preventDefault();
         });
 
-        gameContainer.addEventListener(this.eventTouchend, function(event) {
+        gameContainer.addEventListener(this.eventTouchend, event => {
             if ((!window.navigator.msPointerEnabled && event.touches.length > 0) ||
                 event.targetTouches.length > 0 ||
-                self.targetIsInput(event) ||
-                self.targetIsLink(event)) {
+                this.targetIsInput(event) ||
+                this.targetIsLink(event)) {
                 return; // Ignore if still touching with one or more fingers or input
             }
 
-            var touchEndClientX, touchEndClientY;
+            let touchEndClientX, touchEndClientY;
 
             if (window.navigator.msPointerEnabled) {
                 touchEndClientX = event.pageX;
@@ -135,15 +133,15 @@ export default class KeyboardInputManager {
                 touchEndClientY = event.changedTouches[0].clientY;
             }
 
-            var dx = touchEndClientX - touchStartClientX;
-            var absDx = Math.abs(dx);
+            const dx = touchEndClientX - touchStartClientX;
+            const absDx = Math.abs(dx);
 
-            var dy = touchEndClientY - touchStartClientY;
-            var absDy = Math.abs(dy);
+            const dy = touchEndClientY - touchStartClientY;
+            const absDy = Math.abs(dy);
 
             if (Math.max(absDx, absDy) > 10) {
                 // (right : left) : (down : up)
-                self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
+                this.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
             }
         });
     }
@@ -174,18 +172,19 @@ export default class KeyboardInputManager {
     }
 
     bindAll(selector, fn) {
-        var elements = document.querySelectorAll(selector);
-        var self = this;
-        elements.forEach(function(element) {
-            element.addEventListener("click", fn.bind(self));
-            element.addEventListener(self.eventTouchend, fn.bind(self));
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.addEventListener("click", fn);
+            element.addEventListener(this.eventTouchend, fn);
         });
     }
 
     bindButtonPress(selector, fn) {
-        var button = document.querySelector(selector);
-        button.addEventListener("click", fn.bind(this));
-        button.addEventListener(this.eventTouchend, fn.bind(this));
+        const button = document.querySelector(selector);
+        if (button) {
+            button.addEventListener("click", fn);
+            button.addEventListener(this.eventTouchend, fn);
+        }
     }
 
     targetIsInput(event) {
@@ -195,4 +194,4 @@ export default class KeyboardInputManager {
     targetIsLink(event) {
         return event.target.tagName.toLowerCase() === "a";
     }
-}
+}

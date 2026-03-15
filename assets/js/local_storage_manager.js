@@ -1,19 +1,19 @@
 const fakeStorage = {
     _data: {},
 
-    setItem: function(id, val) {
+    setItem(id, val) {
         return this._data[id] = String(val);
     },
 
-    getItem: function(id) {
+    getItem(id) {
         return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
     },
 
-    removeItem: function(id) {
+    removeItem(id) {
         return delete this._data[id];
     },
 
-    clear: function() {
+    clear() {
         return this._data = {};
     }
 };
@@ -42,14 +42,12 @@ export default class LocalStorageManager {
     }
 
     // Best score getters/setters
-    getBestScore(size) {
-        size = size || 4; // Default to 4
-        return this.storage.getItem(this.bestScoreKey + "_" + size) || 0;
+    getBestScore(size = 4) {
+        return this.storage.getItem(`${this.bestScoreKey}_${size}`) || 0;
     }
 
-    setBestScore(score, size) {
-        size = size || 4;
-        this.storage.setItem(this.bestScoreKey + "_" + size, score);
+    setBestScore(score, size = 4) {
+        this.storage.setItem(`${this.bestScoreKey}_${size}`, score);
     }
 
     // Game state getters/setters and clearing

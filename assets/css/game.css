@@ -1,0 +1,159 @@
+.game-container {
+    margin-top: 40px;
+    position: relative;
+    cursor: default;
+    user-select: none;
+    touch-action: none;
+    background: var(--field-bg);
+    border-radius: 6px;
+    width: var(--game-container-size);
+    height: var(--game-container-size);
+    box-sizing: border-box;
+}
+
+.grid-container {
+    position: absolute;
+    top: var(--tile-margin);
+    left: var(--tile-margin);
+    z-index: 1;
+}
+
+.grid-row {
+    display: flex;
+    margin-bottom: var(--tile-margin);
+}
+
+.grid-row:last-child {
+    margin-bottom: 0;
+}
+
+.grid-cell {
+    width: var(--tile-size);
+    height: var(--tile-size);
+    margin-right: var(--tile-margin);
+    border-radius: 3px;
+    background: rgba(238, 228, 218, 0.35);
+}
+
+.tile-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.game-message {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(238, 228, 218, 0.73);
+    z-index: 100;
+    padding-top: 40px;
+    text-align: center;
+}
+
+.game-message p {
+    font-size: 60px;
+    font-weight: bold;
+    height: 60px;
+    line-height: 60px;
+    margin-top: 222px;
+}
+
+.game-message .lower {
+    display: block;
+    margin-top: 29px;
+}
+
+.game-message .message-appendix {
+    opacity: 0;
+    margin-top: 52px;
+}
+
+.game-message .message-appendix strong {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.game-message a {
+    display: inline-block;
+    background: #8f7a66;
+    border-radius: 3px;
+    padding: 0 20px;
+    text-decoration: none;
+    color: #f9f6f2;
+    height: 40px;
+    line-height: 42px;
+    cursor: pointer;
+    margin-left: 9px;
+}
+
+.game-message a.keep-playing-button {
+    display: none;
+}
+
+.game-message .score-sharing {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.game-message.game-won {
+    background: rgba(237, 194, 46, 0.5);
+    color: #f9f6f2;
+}
+
+.game-message.game-won a.keep-playing-button {
+    display: inline-block;
+}
+
+.game-message.game-won,
+.game-message.game-over {
+    display: block;
+}
+
+@media screen and (max-width: 520px) {
+    .game-container {
+        margin-top: 17px;
+        position: relative;
+        padding: 10px;
+        background: #bbada0;
+        border-radius: 6px;
+        width: 280px;
+        height: 280px;
+        box-sizing: border-box;
+    }
+    .grid-container {
+        position: absolute;
+        z-index: 1;
+    }
+    .grid-row {
+        margin-bottom: 10px;
+    }
+    .grid-cell {
+        width: 57.5px;
+        height: 57.5px;
+        margin-right: 10px;
+        border-radius: 3px;
+        background: rgba(238, 228, 218, 0.35);
+    }
+    .grid-cell:last-child {
+        margin-right: 0;
+    }
+    .game-message {
+        padding-top: 0;
+    }
+    .game-message p {
+        font-size: 30px !important;
+        height: 30px !important;
+        line-height: 30px !important;
+        margin-top: 32% !important;
+        margin-bottom: 0 !important;
+    }
+    .game-message .lower {
+        margin-top: 10px !important;
+    }
+}

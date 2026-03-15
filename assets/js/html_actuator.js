@@ -16,8 +16,8 @@ export default class HTMLActuator {
     }
 
     updateSizeHighlight(size) {
-        var options = document.querySelectorAll(".size-option");
-        options.forEach(function(opt) {
+        const options = document.querySelectorAll(".size-option");
+        options.forEach(opt => {
             if (parseInt(opt.getAttribute("data-size")) === size) {
                 opt.classList.add("active");
             } else {
@@ -30,12 +30,12 @@ export default class HTMLActuator {
     setupGrid(size) {
         this.clearContainer(this.gridContainer);
 
-        for (var i = 0; i < size; i++) {
-            var row = document.createElement("div");
+        for (let i = 0; i < size; i++) {
+            const row = document.createElement("div");
             row.classList.add("grid-row");
 
-            for (var j = 0; j < size; j++) {
-                var cell = document.createElement("div");
+            for (let j = 0; j < size; j++) {
+                const cell = document.createElement("div");
                 cell.classList.add("grid-cell");
                 row.appendChild(cell);
             }
@@ -53,32 +53,30 @@ export default class HTMLActuator {
         const tileSize = (containerSize - (spacing * (size + 1))) / size;
 
         root.style.setProperty('--grid-row-cells', size);
-        root.style.setProperty('--tile-size', tileSize + 'px');
-        root.style.setProperty('--tile-margin', spacing + 'px');
+        root.style.setProperty('--tile-size', `${tileSize}px`);
+        root.style.setProperty('--tile-margin', `${spacing}px`);
     }
 
     actuate(grid, metadata) {
-        var self = this;
+        window.requestAnimationFrame(() => {
+            this.clearContainer(this.tileContainer);
 
-        window.requestAnimationFrame(function() {
-            self.clearContainer(self.tileContainer);
-
-            grid.cells.forEach(function(column) {
-                column.forEach(function(cell) {
+            grid.cells.forEach(column => {
+                column.forEach(cell => {
                     if (cell) {
-                        self.addTile(cell);
+                        this.addTile(cell);
                     }
                 });
             });
 
-            self.updateScore(metadata.score);
-            self.updateBestScore(metadata.bestScore);
+            this.updateScore(metadata.score);
+            this.updateBestScore(metadata.bestScore);
 
             if (metadata.terminated) {
                 if (metadata.over) {
-                    self.message(false); // You lose
+                    this.message(false); // You lose
                 } else if (metadata.won) {
-                    self.message(true); // You win!
+                    this.message(true); // You win!
                 }
             }
         });
@@ -96,16 +94,14 @@ export default class HTMLActuator {
     }
 
     addTile(tile) {
-        var self = this;
-
-        var wrapper = document.createElement("div");
-        var inner = document.createElement("div");
-        var position = tile.previousPosition || { x: tile.x, y: tile.y };
+        const wrapper = document.createElement("div");
+        const inner = document.createElement("div");
+        const position = tile.previousPosition || { x: tile.x, y: tile.y };
         
         wrapper.style.transform = this.getTranslate(position);
 
         // We can't use classlist because it somehow glitches when replacing classes
-        var classes = ["tile", "tile-" + tile.value];
+        const classes = ["tile", `tile-${tile.value}`];
 
         if (tile.value > 2048) classes.push("tile-super");
 
@@ -116,16 +112,16 @@ export default class HTMLActuator {
 
         if (tile.previousPosition) {
             // Make sure that the tile gets rendered in the previous position first
-            window.requestAnimationFrame(function() {
-                wrapper.style.transform = self.getTranslate({ x: tile.x, y: tile.y });
+            window.requestAnimationFrame(() => {
+                wrapper.style.transform = this.getTranslate({ x: tile.x, y: tile.y });
             });
         } else if (tile.mergedFrom) {
             classes.push("tile-merged");
             this.applyClasses(wrapper, classes);
 
             // Render the tiles that merged
-            tile.mergedFrom.forEach(function(merged) {
-                self.addTile(merged);
+            tile.mergedFrom.forEach(merged => {
+                this.addTile(merged);
             });
         } else {
             classes.push("tile-new");
@@ -140,8 +136,7 @@ export default class HTMLActuator {
     }
 
     getTranslate(position) {
-        const x = position.x;
-        const y = position.y;
+        const { x, y } = position;
         return `translate(calc(${x} * (var(--tile-size) + var(--tile-margin)) + var(--tile-margin)), calc(${y} * (var(--tile-size) + var(--tile-margin)) + var(--tile-margin)))`;
     }
 
@@ -152,15 +147,15 @@ export default class HTMLActuator {
     updateScore(score) {
         this.clearContainer(this.scoreContainer);
 
-        var difference = score - this.score;
+        const difference = score - this.score;
         this.score = score;
 
         this.scoreContainer.textContent = this.score;
 
         if (difference > 0) {
-            var addition = document.createElement("div");
+            const addition = document.createElement("div");
             addition.classList.add("score-addition");
-            addition.textContent = "+" + difference;
+            addition.textContent = `+${difference}`;
 
             this.scoreContainer.appendChild(addition);
 
@@ -178,42 +173,42 @@ export default class HTMLActuator {
     }
 
     message(won) {
-        var type = won ? "game-won" : "game-over";
-        var message = won ? "You win!" : "Game over!";
+        const type = won ? "game-won" : "game-over";
+        const message = won ? "You win!" : "Game over!";
 
         this.messageContainer.classList.add(type);
-        this.messageContainer.getElementsByTagName("p")[0].textContent = message;
+        this.messageContainer.querySelectorAll("p")[0].textContent = message;
 
         this.clearContainer(this.sharingContainer);
         this.sharingContainer.appendChild(this.scoreTweetButton());
     }
 
     clearMessage() {
-        // IE only takes one value to remove at a time.
         this.messageContainer.classList.remove("game-won");
         this.messageContainer.classList.remove("game-over");
     }
 
     setDarkMode(enabled) {
+        const themeToggle = document.querySelector(".theme-toggle");
         if (enabled) {
             document.body.classList.add("dark-mode");
-            document.querySelector(".theme-toggle").textContent = "Light Mode";
+            if (themeToggle) themeToggle.textContent = "Light Mode";
         } else {
             document.body.classList.remove("dark-mode");
-            document.querySelector(".theme-toggle").textContent = "Dark Mode";
+            if (themeToggle) themeToggle.textContent = "Dark Mode";
         }
     }
 
     scoreTweetButton() {
-        var tweet = document.createElement("a");
+        const tweet = document.createElement("a");
         tweet.classList.add("twitter-share-button");
         tweet.setAttribute("href", "https://twitter.com/share");
         tweet.setAttribute("data-url", "https://jet2511.github.io/2048/");
         tweet.textContent = "Tweet";
 
-        var text = "I scored " + this.score + " points at 2048, a game where you join numbers to score high! #2048game";
+        const text = `I scored ${this.score} points at 2048, a game where you join numbers to score high! #2048game`;
         tweet.setAttribute("data-text", text);
 
         return tweet;
     }
-}
+}

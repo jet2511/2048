@@ -26,12 +26,18 @@ Play it here: [https://jet2511.github.io/2048/](https://jet2511.github.io/2048/)
 ```text
 2048/
 ├── assets/
-│   ├── css/    # Stylesheets
-│   ├── js/     # Core game logic
-│   ├── meta/   # Icons and social media assets
-│   └── fonts/  # Typography
-├── index.html  # Main entry point
-└── README.md   # Project documentation
+│   ├── css/            # Modular Stylesheets
+│   │   ├── main.css    # Entry point (imports modules)
+│   │   ├── base.css    # Variables & resets
+│   │   ├── ui.css      # UI components & settings
+│   │   ├── game.css    # Game board & layout
+│   │   ├── tiles.css   # Tile colors & styles
+│   │   └── animations.css # Keyframe animations
+│   ├── js/             # Core game logic (Modern ES6+)
+│   ├── meta/           # Icons and social media assets
+│   └── fonts/          # Typography
+├── index.html          # Main entry point
+└── README.md           # Project documentation
 ```
 
 ## 🤝 Acknowledgements

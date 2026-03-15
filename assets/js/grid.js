@@ -8,12 +8,12 @@ export default class Grid {
 
     // Build a grid of the specified size
     empty() {
-        var cells = [];
+        const cells = [];
 
-        for (var x = 0; x < this.size; x++) {
-            var row = cells[x] = [];
+        for (let x = 0; x < this.size; x++) {
+            const row = cells[x] = [];
 
-            for (var y = 0; y < this.size; y++) {
+            for (let y = 0; y < this.size; y++) {
                 row.push(null);
             }
         }
@@ -22,13 +22,13 @@ export default class Grid {
     }
 
     fromState(state) {
-        var cells = [];
+        const cells = [];
 
-        for (var x = 0; x < this.size; x++) {
-            var row = cells[x] = [];
+        for (let x = 0; x < this.size; x++) {
+            const row = cells[x] = [];
 
-            for (var y = 0; y < this.size; y++) {
-                var tile = state[x][y];
+            for (let y = 0; y < this.size; y++) {
+                const tile = state[x][y];
                 row.push(tile ? new Tile(tile.position, tile.value, tile.id) : null);
             }
         }
@@ -38,7 +38,7 @@ export default class Grid {
 
     // Find the first available random position
     randomAvailableCell() {
-        var cells = this.availableCells();
+        const cells = this.availableCells();
 
         if (cells.length) {
             return cells[Math.floor(Math.random() * cells.length)];
@@ -46,11 +46,11 @@ export default class Grid {
     }
 
     availableCells() {
-        var cells = [];
+        const cells = [];
 
-        this.eachCell(function(x, y, tile) {
+        this.eachCell((x, y, tile) => {
             if (!tile) {
-                cells.push({ x: x, y: y });
+                cells.push({ x, y });
             }
         });
 
@@ -59,8 +59,8 @@ export default class Grid {
 
     // Call callback for every cell
     eachCell(callback) {
-        for (var x = 0; x < this.size; x++) {
-            for (var y = 0; y < this.size; y++) {
+        for (let x = 0; x < this.size; x++) {
+            for (let y = 0; y < this.size; y++) {
                 callback(x, y, this.cells[x][y]);
             }
         }
@@ -103,12 +103,12 @@ export default class Grid {
     }
 
     serialize() {
-        var cellState = [];
+        const cellState = [];
 
-        for (var x = 0; x < this.size; x++) {
-            var row = cellState[x] = [];
+        for (let x = 0; x < this.size; x++) {
+            const row = cellState[x] = [];
 
-            for (var y = 0; y < this.size; y++) {
+            for (let y = 0; y < this.size; y++) {
                 row.push(this.cells[x][y] ? this.cells[x][y].serialize() : null);
             }
         }
@@ -118,4 +118,4 @@ export default class Grid {
             cells: cellState
         };
     }
-}
+}

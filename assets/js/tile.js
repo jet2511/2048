@@ -1,8 +1,8 @@
 export default class Tile {
-    constructor(position, value, id) {
+    constructor(position, value = 2, id) {
         this.x = position.x;
         this.y = position.y;
-        this.value = value || 2;
+        this.value = value;
         this.id = id;
 
         this.previousPosition = null;

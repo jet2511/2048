@@ -1,0 +1,59 @@
+:root {
+    --bg-color: #faf8ef;
+    --text-color: #776e65;
+    --field-bg: #bbada0;
+    --tile-color: #776e65;
+    --tile-bg: #eee4da;
+    --tile-gold: #edc22e;
+    
+    --grid-spacing: 15px;
+    --grid-row-cells: 4;
+    --game-container-size: 500px;
+    --tile-size: 107px;
+    --tile-margin: 15px;
+    --transition-speed: 100ms;
+}
+
+body.dark-mode {
+    --bg-color: #121213;
+    --text-color: #e0e0e0;
+    --field-bg: #2c2c2e;
+    --tile-bg: #3a3a3c;
+    --tile-color: #e0e0e0;
+    --tile-gold: #ffcc33;
+}
+
+body {
+    margin: 40px 0;
+    font-family: 'Lexend', 'Outfit', 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    width: var(--game-container-size);
+    margin: 0 auto;
+}
+
+.outerContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+}
+
+@media screen and (max-width: 520px) {
+    html,
+    body {
+        font-size: 15px;
+    }
+    body {
+        margin-top: 0;
+        padding: 20px;
+    }
+    .container {
+        width: 280px;
+        margin: 0 auto;
+    }
+}
