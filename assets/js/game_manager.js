@@ -90,6 +90,7 @@ export default class GameManager {
             this.over = previousState.over;
             this.won = previousState.won;
             this.keepPlaying = previousState.keepPlaying;
+            this.nextId = previousState.nextId || 0;
         } else {
             this.grid = new Grid(this.size);
             this.score = 0;
@@ -153,7 +154,8 @@ export default class GameManager {
             score: this.score,
             over: this.over,
             won: this.won,
-            keepPlaying: this.keepPlaying
+            keepPlaying: this.keepPlaying,
+            nextId: this.nextId
         };
     }
 

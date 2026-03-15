@@ -163,6 +163,13 @@ export default class HTMLActuator {
             addition.textContent = "+" + difference;
 
             this.scoreContainer.appendChild(addition);
+
+            // Clean up the addition element after the animation (approx 600ms)
+            setTimeout(() => {
+                if (addition.parentNode) {
+                    addition.parentNode.removeChild(addition);
+                }
+            }, 600);
         }
     }
 
