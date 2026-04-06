@@ -1,0 +1,122 @@
+.game-footer {
+    margin-top: 50px;
+    padding-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+        "instructions instructions about"
+        "instructions instructions links";
+    gap: 16px;
+    width: 100%;
+}
+
+.footer-card {
+    background: rgba(187, 173, 160, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(187, 173, 160, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-card:hover {
+    transform: translateY(-4px);
+    background: rgba(187, 173, 160, 0.15);
+    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.1);
+}
+
+.footer-instructions {
+    grid-area: instructions;
+}
+
+.footer-about {
+    grid-area: about;
+}
+
+.footer-links {
+    grid-area: links;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-instructions p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.footer-instructions strong {
+    color: var(--tile-gold);
+}
+
+.footer-about p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.footer-about a, .footer-links a {
+    color: var(--text-color);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(187, 173, 160, 0.4);
+    transition: all 0.2s;
+}
+
+.footer-about a:hover, .footer-links a:hover {
+    border-bottom-color: var(--tile-gold);
+    color: var(--tile-gold);
+}
+
+.footer-links {
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.sharing-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode .footer-card {
+    background: rgba(58, 58, 60, 0.4);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .footer-card:hover {
+    background: rgba(58, 58, 60, 0.6);
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .game-footer {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "instructions"
+            "about"
+            "links";
+    }
+    
+    .footer-instructions, .footer-about, .footer-links {
+        grid-area: unset;
+    }
+}

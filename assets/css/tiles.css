@@ -2,7 +2,8 @@
     position: absolute;
     width: var(--tile-size);
     height: var(--tile-size);
-    transition: transform var(--transition-speed) ease-in-out;
+    transition: transform var(--transition-speed) var(--transition-easing);
+    will-change: transform;
 }
 
 .tile .tile-inner {

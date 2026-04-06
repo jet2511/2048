@@ -7,8 +7,65 @@ export default class HTMLActuator {
         this.bestContainer = document.querySelector(".best-container");
         this.messageContainer = document.querySelector(".game-message");
         this.sharingContainer = document.querySelector(".score-sharing");
+        this.outerContainer = document.querySelector(".outerContainer");
 
         this.score = 0;
+        this.size = 4; // Default size
+        this.setupConfirmModal();
+        
+        // Listen for window resize to handle responsiveness
+        window.addEventListener("resize", () => {
+            this.updateCSSVars(this.size);
+        });
+    }
+
+    setupConfirmModal() {
+        this.confirmModal = document.createElement("div");
+        this.confirmModal.classList.add("confirm-modal");
+        
+        const content = document.createElement("div");
+        content.classList.add("confirm-content");
+        
+        const text = document.createElement("p");
+        text.classList.add("confirm-text");
+        
+        const buttons = document.createElement("div");
+        buttons.classList.add("confirm-buttons");
+        
+        const cancelBtn = document.createElement("a");
+        cancelBtn.classList.add("confirm-button", "cancel");
+        cancelBtn.textContent = "Hủy";
+        
+        const confirmBtn = document.createElement("a");
+        confirmBtn.classList.add("confirm-button", "confirm");
+        confirmBtn.textContent = "Tiếp tục";
+        
+        buttons.appendChild(cancelBtn);
+        buttons.appendChild(confirmBtn);
+        content.appendChild(text);
+        content.appendChild(buttons);
+        this.confirmModal.appendChild(content);
+        
+        this.outerContainer.appendChild(this.confirmModal);
+        
+        this.confirmCallback = null;
+        
+        cancelBtn.addEventListener("click", () => this.handleConfirm(false));
+        confirmBtn.addEventListener("click", () => this.handleConfirm(true));
+    }
+
+    showConfirm(message, callback) {
+        this.confirmModal.querySelector(".confirm-text").textContent = message;
+        this.confirmModal.classList.add("is-open");
+        this.confirmCallback = callback;
+    }
+
+    handleConfirm(confirmed) {
+        this.confirmModal.classList.remove("is-open");
+        if (this.confirmCallback) {
+            this.confirmCallback(confirmed);
+            this.confirmCallback = null;
+        }
     }
 
     toggleSettings() {
@@ -28,6 +85,7 @@ export default class HTMLActuator {
 
     // Set up the grid background based on size
     setupGrid(size) {
+        this.size = size;
         this.clearContainer(this.gridContainer);
 
         for (let i = 0; i < size; i++) {
@@ -48,13 +106,21 @@ export default class HTMLActuator {
 
     updateCSSVars(size) {
         const root = document.documentElement;
-        const spacing = 15; // px
-        const containerSize = 500; // px
+        const gameContainer = document.querySelector(".game-container");
+        
+        // Get the current width of the container on screen
+        // If it's not visible yet (startup), it will fall back to base.css values
+        const rect = gameContainer.getBoundingClientRect();
+        const containerSize = rect.width > 0 ? rect.width : 500;
+        
+        // Match the spacing (varies by screen size but usually 15px or 10px on mobile)
+        const spacing = window.innerWidth <= 520 ? 10 : 15;
         const tileSize = (containerSize - (spacing * (size + 1))) / size;
 
         root.style.setProperty('--grid-row-cells', size);
         root.style.setProperty('--tile-size', `${tileSize}px`);
         root.style.setProperty('--tile-margin', `${spacing}px`);
+        root.style.setProperty('--game-container-size', `${containerSize}px`);
     }
 
     actuate(grid, metadata) {
