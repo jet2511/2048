@@ -1,8 +1,8 @@
-# 2048 Game
+# Nexus 2048 Game
 
-A minimalist and polished clone of the famous 2048 game. Join the numbers and get to the **2048 tile!**
+A minimalist, polished, and modern clone of the famous 2048 game. Join the numbers and get to the **Nexus 2048 tile!**
 
-![2048 Game Screenshot](https://jet2511.github.io/2048/assets/meta/og_image.png)
+![Nexus 2048 Logo](./assets/meta/logo.png)
 
 ## 🚀 Live Demo
 Play it here: [https://jet2511.github.io/2048/](https://jet2511.github.io/2048/)

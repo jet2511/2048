@@ -5,19 +5,40 @@
 }
 
 h1.title {
-    font-size: 68px;
-    font-weight: bold;
+    font-size: 48px;
+    font-weight: 800;
     margin: 0;
     display: block;
 }
 
 h1.title .title-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     text-decoration: none;
     color: var(--text-color);
 }
 
-h1.title .title-link-shade {
-    color: hsl(29, 17%, 68%);
+.logo-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.title-link:hover .logo-image {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+.logo-text {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -1.5px;
+}
+
+.logo-text-shade {
+    color: var(--tile-gold);
 }
 
 .scores-container {
@@ -212,8 +233,16 @@ hr {
 
 @media screen and (max-width: 520px) {
     h1.title {
-        font-size: 27px;
+        font-size: 28px;
         margin-top: 15px;
+    }
+    .logo-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+    }
+    h1.title .title-link {
+        gap: 8px;
     }
     .score-container, .best-container {
         margin-top: 0;
