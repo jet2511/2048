@@ -10,7 +10,13 @@ export default class HTMLActuator {
         this.outerContainer = document.querySelector(".outerContainer");
 
         this.score = 0;
+        this.size = 4; // Default size
         this.setupConfirmModal();
+        
+        // Listen for window resize to handle responsiveness
+        window.addEventListener("resize", () => {
+            this.updateCSSVars(this.size);
+        });
     }
 
     setupConfirmModal() {
@@ -79,6 +85,7 @@ export default class HTMLActuator {
 
     // Set up the grid background based on size
     setupGrid(size) {
+        this.size = size;
         this.clearContainer(this.gridContainer);
 
         for (let i = 0; i < size; i++) {
@@ -99,13 +106,21 @@ export default class HTMLActuator {
 
     updateCSSVars(size) {
         const root = document.documentElement;
-        const spacing = 15; // px
-        const containerSize = 500; // px
+        const gameContainer = document.querySelector(".game-container");
+        
+        // Get the current width of the container on screen
+        // If it's not visible yet (startup), it will fall back to base.css values
+        const rect = gameContainer.getBoundingClientRect();
+        const containerSize = rect.width > 0 ? rect.width : 500;
+        
+        // Match the spacing (varies by screen size but usually 15px or 10px on mobile)
+        const spacing = window.innerWidth <= 520 ? 10 : 15;
         const tileSize = (containerSize - (spacing * (size + 1))) / size;
 
         root.style.setProperty('--grid-row-cells', size);
         root.style.setProperty('--tile-size', `${tileSize}px`);
         root.style.setProperty('--tile-margin', `${spacing}px`);
+        root.style.setProperty('--game-container-size', `${containerSize}px`);
     }
 
     actuate(grid, metadata) {
