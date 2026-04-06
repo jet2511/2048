@@ -40,15 +40,16 @@ export default class GameManager {
     changeSize(size) {
         if (size === this.size) return;
 
-        const confirmChange = confirm("Dữ liệu hiện tại sẽ bị mất khi bạn đổi kích thước màn chơi. Bạn có chắc chắn muốn tiếp tục?");
-        
-        if (confirmChange) {
-            this.size = size;
-            this.storageManager.setItem("gridSize", size);
-            this.restart();
-        } else {
-            this.actuator.updateSizeHighlight(this.size);
-        }
+        // Custom UI confirmation instead of blocking confirm()
+        this.actuator.showConfirm("Dữ liệu hiện tại sẽ bị mất khi bạn đổi kích thước màn chơi. Bạn có chắc chắn muốn tiếp tục?", (confirmed) => {
+            if (confirmed) {
+                this.size = size;
+                this.storageManager.setItem("gridSize", size);
+                this.restart();
+            } else {
+                this.actuator.updateSizeHighlight(this.size);
+            }
+        });
     }
 
     toggleSettings() {
@@ -66,13 +67,13 @@ export default class GameManager {
 
     // Keep playing after winning (allows going over 2048)
     keepPlaying() {
-        this.keepPlaying = true;
+        this.isKeepPlaying = true;
         this.actuator.continueGame(); // Clear the game won/lost message
     }
 
     // Return true if the game is lost, or has won and the user hasn't kept playing
     isGameTerminated() {
-        return this.over || (this.won && !this.keepPlaying);
+        return this.over || (this.won && !this.isKeepPlaying);
     }
 
     // Set up the game
@@ -86,14 +87,14 @@ export default class GameManager {
             this.score = previousState.score;
             this.over = previousState.over;
             this.won = previousState.won;
-            this.keepPlaying = previousState.keepPlaying;
+            this.isKeepPlaying = previousState.isKeepPlaying || previousState.keepPlaying;
             this.nextId = previousState.nextId || 0;
         } else {
             this.grid = new Grid(this.size);
             this.score = 0;
             this.over = false;
             this.won = false;
-            this.keepPlaying = false;
+            this.isKeepPlaying = false;
 
             // Add the initial tiles
             this.addStartTiles();
@@ -151,7 +152,7 @@ export default class GameManager {
             score: this.score,
             over: this.over,
             won: this.won,
-            keepPlaying: this.keepPlaying,
+            isKeepPlaying: this.isKeepPlaying,
             nextId: this.nextId
         };
     }
@@ -269,7 +270,7 @@ export default class GameManager {
         
         this.over = state.over;
         this.won = state.won;
-        this.keepPlaying = state.keepPlaying;
+        this.isKeepPlaying = state.isKeepPlaying;
 
         this.actuate();
     }

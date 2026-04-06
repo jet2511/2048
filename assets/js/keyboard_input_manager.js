@@ -2,16 +2,9 @@ export default class KeyboardInputManager {
     constructor() {
         this.events = {};
 
-        if (window.navigator.msPointerEnabled) {
-            // Internet Explorer 10 style
-            this.eventTouchstart = "MSPointerDown";
-            this.eventTouchmove = "MSPointerMove";
-            this.eventTouchend = "MSPointerUp";
-        } else {
-            this.eventTouchstart = "touchstart";
-            this.eventTouchmove = "touchmove";
-            this.eventTouchend = "touchend";
-        }
+        this.eventTouchstart = "touchstart";
+        this.eventTouchmove = "touchmove";
+        this.eventTouchend = "touchend";
 
         this.listen();
     }
@@ -93,20 +86,15 @@ export default class KeyboardInputManager {
         const gameContainer = document.getElementsByClassName("game-container")[0];
 
         gameContainer.addEventListener(this.eventTouchstart, event => {
-            if ((!window.navigator.msPointerEnabled && event.touches.length > 1) ||
+            if (event.touches.length > 1 ||
                 event.targetTouches.length > 1 ||
                 this.targetIsInput(event) ||
                 this.targetIsLink(event)) {
                 return; // Ignore if touching with more than 1 finger or touching input
             }
 
-            if (window.navigator.msPointerEnabled) {
-                touchStartClientX = event.pageX;
-                touchStartClientY = event.pageY;
-            } else {
-                touchStartClientX = event.touches[0].clientX;
-                touchStartClientY = event.touches[0].clientY;
-            }
+            touchStartClientX = event.touches[0].clientX;
+            touchStartClientY = event.touches[0].clientY;
 
             event.preventDefault();
         });
@@ -116,7 +104,7 @@ export default class KeyboardInputManager {
         });
 
         gameContainer.addEventListener(this.eventTouchend, event => {
-            if ((!window.navigator.msPointerEnabled && event.touches.length > 0) ||
+            if (event.touches.length > 0 ||
                 event.targetTouches.length > 0 ||
                 this.targetIsInput(event) ||
                 this.targetIsLink(event)) {
@@ -125,13 +113,8 @@ export default class KeyboardInputManager {
 
             let touchEndClientX, touchEndClientY;
 
-            if (window.navigator.msPointerEnabled) {
-                touchEndClientX = event.pageX;
-                touchEndClientY = event.pageY;
-            } else {
-                touchEndClientX = event.changedTouches[0].clientX;
-                touchEndClientY = event.changedTouches[0].clientY;
-            }
+            touchEndClientX = event.changedTouches[0].clientX;
+            touchEndClientY = event.changedTouches[0].clientY;
 
             const dx = touchEndClientX - touchStartClientX;
             const absDx = Math.abs(dx);
@@ -139,7 +122,7 @@ export default class KeyboardInputManager {
             const dy = touchEndClientY - touchStartClientY;
             const absDy = Math.abs(dy);
 
-            if (Math.max(absDx, absDy) > 10) {
+            if (Math.max(absDx, absDy) > 5) {
                 // (right : left) : (down : up)
                 this.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
             }

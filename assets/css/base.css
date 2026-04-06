@@ -12,6 +12,7 @@
     --tile-size: 107px;
     --tile-margin: 15px;
     --transition-speed: 100ms;
+    --transition-easing: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body.dark-mode {
@@ -29,6 +30,14 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tile {
+    position: absolute;
+    width: var(--tile-size);
+    height: var(--tile-size);
+    transition: transform var(--transition-speed) var(--transition-easing);
+    will-change: transform;
 }
 
 .container {

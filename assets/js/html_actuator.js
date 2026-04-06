@@ -7,8 +7,59 @@ export default class HTMLActuator {
         this.bestContainer = document.querySelector(".best-container");
         this.messageContainer = document.querySelector(".game-message");
         this.sharingContainer = document.querySelector(".score-sharing");
+        this.outerContainer = document.querySelector(".outerContainer");
 
         this.score = 0;
+        this.setupConfirmModal();
+    }
+
+    setupConfirmModal() {
+        this.confirmModal = document.createElement("div");
+        this.confirmModal.classList.add("confirm-modal");
+        
+        const content = document.createElement("div");
+        content.classList.add("confirm-content");
+        
+        const text = document.createElement("p");
+        text.classList.add("confirm-text");
+        
+        const buttons = document.createElement("div");
+        buttons.classList.add("confirm-buttons");
+        
+        const cancelBtn = document.createElement("a");
+        cancelBtn.classList.add("confirm-button", "cancel");
+        cancelBtn.textContent = "Hủy";
+        
+        const confirmBtn = document.createElement("a");
+        confirmBtn.classList.add("confirm-button", "confirm");
+        confirmBtn.textContent = "Tiếp tục";
+        
+        buttons.appendChild(cancelBtn);
+        buttons.appendChild(confirmBtn);
+        content.appendChild(text);
+        content.appendChild(buttons);
+        this.confirmModal.appendChild(content);
+        
+        this.outerContainer.appendChild(this.confirmModal);
+        
+        this.confirmCallback = null;
+        
+        cancelBtn.addEventListener("click", () => this.handleConfirm(false));
+        confirmBtn.addEventListener("click", () => this.handleConfirm(true));
+    }
+
+    showConfirm(message, callback) {
+        this.confirmModal.querySelector(".confirm-text").textContent = message;
+        this.confirmModal.classList.add("is-open");
+        this.confirmCallback = callback;
+    }
+
+    handleConfirm(confirmed) {
+        this.confirmModal.classList.remove("is-open");
+        if (this.confirmCallback) {
+            this.confirmCallback(confirmed);
+            this.confirmCallback = null;
+        }
     }
 
     toggleSettings() {
