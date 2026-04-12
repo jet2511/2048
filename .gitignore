@@ -16,13 +16,15 @@ dist-ssr
 *.local
 
 # Test
-playwright-report
-test-results
+playwright-report/
+test-results/
+test-result/
+.playwright-mcp/
 
 # Editor directories and files
 .vscode
 !.vscode/extensions.json
-.idea
+.idea~
 .DS_Store
 *.suo
 *.ntvs*

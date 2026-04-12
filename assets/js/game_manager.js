@@ -20,6 +20,8 @@ export default class GameManager {
         this.inputManager.on("changeSize", this.changeSize.bind(this));
         this.inputManager.on("changeTheme", this.changeTheme.bind(this));
         this.inputManager.on("toggleSettings", this.toggleSettings.bind(this));
+        this.inputManager.on("showStats", this.showStats.bind(this));
+        this.inputManager.on("resetStats", this.resetStats.bind(this));
 
         this.setup();
         this.applyTheme();
@@ -55,6 +57,30 @@ export default class GameManager {
     toggleSettings() {
         this.actuator.toggleSettings();
         this.actuator.updateSizeHighlight(this.size);
+    }
+
+    showStats() {
+        const stats = this.storageManager.getStats();
+        const allStats = this.storageManager.getAllStats();
+        this.actuator.showStats(stats, allStats, this.size);
+    }
+
+    resetStats(size = null) {
+        const stats = this.storageManager.resetStats(size);
+        const allStats = this.storageManager.getAllStats();
+        this.actuator.updateStatsDisplay(stats, allStats);
+    }
+
+    // Track game end and update stats
+    trackGameEnd(result) {
+        let maxTile = 2;
+        this.grid.eachCell((x, y, tile) => {
+            if (tile && tile.value > maxTile) {
+                maxTile = tile.value;
+            }
+        });
+        
+        this.storageManager.updateStats(result, this.score, maxTile, this.size);
     }
 
     // Restart the game
@@ -127,6 +153,13 @@ export default class GameManager {
     actuate() {
         if (this.storageManager.getBestScore(this.size) < this.score) {
             this.storageManager.setBestScore(this.score, this.size);
+        }
+
+        // Track game end
+        if (this.over) {
+            this.trackGameEnd("lost");
+        } else if (this.won && !this.isKeepPlaying) {
+            this.trackGameEnd("won");
         }
 
         // Clear the state when the game is over (game over only, not win)

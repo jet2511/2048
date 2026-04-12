@@ -75,6 +75,12 @@ export default class KeyboardInputManager {
         this.bindButtonPress(".keep-playing-button", this.keepPlaying.bind(this));
         this.bindButtonPress(".theme-toggle", this.themeToggle.bind(this));
         this.bindButtonPress(".settings-toggle", this.settingsToggle.bind(this));
+        this.bindButtonPress(".stats-button", this.statsToggle.bind(this));
+
+        window.addEventListener("resetStats", (e) => {
+            const size = e.detail?.size ?? null;
+            this.emit("resetStats", size);
+        });
 
         this.bindAll(".size-option", event => {
             const size = parseInt(event.target.getAttribute("data-size"));
@@ -152,6 +158,11 @@ export default class KeyboardInputManager {
     settingsToggle(event) {
         event.preventDefault();
         this.emit("toggleSettings");
+    }
+
+    statsToggle(event) {
+        event.preventDefault();
+        this.emit("showStats");
     }
 
     bindAll(selector, fn) {

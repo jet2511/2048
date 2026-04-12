@@ -12,6 +12,7 @@ export default class HTMLActuator {
         this.score = 0;
         this.size = 4; // Default size
         this.setupConfirmModal();
+        this.setupStatsModal();
         
         // Listen for window resize to handle responsiveness
         window.addEventListener("resize", () => {
@@ -52,6 +53,180 @@ export default class HTMLActuator {
         
         cancelBtn.addEventListener("click", () => this.handleConfirm(false));
         confirmBtn.addEventListener("click", () => this.handleConfirm(true));
+    }
+
+    setupStatsModal() {
+        this.statsModal = document.createElement("div");
+        this.statsModal.classList.add("confirm-modal", "stats-modal");
+        
+        const content = document.createElement("div");
+        content.classList.add("confirm-content", "stats-content");
+        
+        const title = document.createElement("h2");
+        title.classList.add("stats-title");
+        title.textContent = "Thống kê game";
+        
+        const sizeSelector = document.createElement("div");
+        sizeSelector.classList.add("stats-size-selector");
+        
+        const sizeLabel = document.createElement("span");
+        sizeLabel.classList.add("stats-size-label");
+        sizeLabel.textContent = "Chế độ:";
+        
+        this.sizeDropdown = document.createElement("select");
+        this.sizeDropdown.classList.add("stats-size-dropdown");
+        
+        const sizes = [
+            { value: "4", label: "4x4" },
+            { value: "3", label: "3x3" },
+            { value: "5", label: "5x5" },
+            { value: "6", label: "6x6" },
+            { value: "total", label: "Tổng" }
+        ];
+        
+        sizes.forEach(size => {
+            const option = document.createElement("option");
+            option.value = size.value;
+            option.textContent = size.label;
+            this.sizeDropdown.appendChild(option);
+        });
+        
+        sizeSelector.appendChild(sizeLabel);
+        sizeSelector.appendChild(this.sizeDropdown);
+        
+        const statsGrid = document.createElement("div");
+        statsGrid.classList.add("stats-grid");
+        
+        this.statsItems = {
+            totalGames: this.createStatItem("Tổng game", "0"),
+            gamesWon: this.createStatItem("Thắng", "0"),
+            gamesLost: this.createStatItem("Thua", "0"),
+            winRate: this.createStatItem("Tỉ lệ thắng", "0%"),
+            bestScore: this.createStatItem("Điểm cao nhất", "0"),
+            bestTile: this.createStatItem("Tile cao nhất", "2")
+        };
+        
+        Object.values(this.statsItems).forEach(item => statsGrid.appendChild(item));
+        
+        const buttons = document.createElement("div");
+        buttons.classList.add("confirm-buttons");
+        
+        const resetBtn = document.createElement("a");
+        resetBtn.classList.add("confirm-button", "reset-stats");
+        resetBtn.textContent = "Reset";
+        
+        const closeBtn = document.createElement("a");
+        closeBtn.classList.add("confirm-button", "close-stats");
+        closeBtn.textContent = "Đóng";
+        
+        buttons.appendChild(resetBtn);
+        buttons.appendChild(closeBtn);
+        
+        content.appendChild(title);
+        content.appendChild(sizeSelector);
+        content.appendChild(statsGrid);
+        content.appendChild(buttons);
+        this.statsModal.appendChild(content);
+        
+        this.outerContainer.appendChild(this.statsModal);
+        
+        this.currentStats = null;
+        this.allStatsData = null;
+        this.currentSize = 4;
+        
+        this.sizeDropdown.addEventListener("change", () => this.onSizeChange());
+        
+        closeBtn.addEventListener("click", () => this.closeStats());
+        resetBtn.addEventListener("click", () => {
+            const sizeToReset = this.currentSize === "total" ? null : parseInt(this.currentSize);
+            window.dispatchEvent(new CustomEvent("resetStats", { detail: { size: sizeToReset } }));
+        });
+    }
+
+    onSizeChange() {
+        const selectedValue = this.sizeDropdown.value;
+        this.currentSize = selectedValue;
+        
+        if (selectedValue === "total") {
+            this.currentStats = this.calculateTotalStats(this.allStatsData);
+        } else {
+            this.currentStats = this.allStatsData[selectedValue] || this.getDefaultStats();
+        }
+        
+        this.updateStatsDisplay(this.currentStats);
+    }
+
+    calculateTotalStats(allStats) {
+        const total = this.getDefaultStats();
+        
+        Object.values(allStats).forEach(stats => {
+            total.totalGames += stats.totalGames;
+            total.gamesWon += stats.gamesWon;
+            total.gamesLost += stats.gamesLost;
+            total.bestScore = Math.max(total.bestScore, stats.bestScore);
+            total.bestTile = Math.max(total.bestTile, stats.bestTile);
+        });
+        
+        return total;
+    }
+
+    getDefaultStats() {
+        return {
+            totalGames: 0,
+            gamesWon: 0,
+            gamesLost: 0,
+            bestScore: 0,
+            bestTile: 2
+        };
+    }
+
+    createStatItem(label, value) {
+        const item = document.createElement("div");
+        item.classList.add("stat-item");
+        
+        const labelEl = document.createElement("span");
+        labelEl.classList.add("stat-label");
+        labelEl.textContent = label;
+        
+        const valueEl = document.createElement("span");
+        valueEl.classList.add("stat-value");
+        valueEl.textContent = value;
+        
+        item.appendChild(labelEl);
+        item.appendChild(valueEl);
+        
+        return item;
+    }
+
+    showStats(stats, allStats, currentSize) {
+        this.allStatsData = allStats;
+        this.currentSize = currentSize.toString();
+        
+        this.sizeDropdown.value = this.currentSize;
+        this.currentStats = stats;
+        
+        this.updateStatsDisplay(stats);
+        this.statsModal.classList.add("is-open");
+    }
+
+    closeStats() {
+        this.statsModal.classList.remove("is-open");
+    }
+
+    updateStatsDisplay(stats, allStats = null) {
+        if (allStats) {
+            this.allStatsData = allStats;
+        }
+        
+        this.statsItems.totalGames.querySelector(".stat-value").textContent = stats.totalGames;
+        this.statsItems.gamesWon.querySelector(".stat-value").textContent = stats.gamesWon;
+        this.statsItems.gamesLost.querySelector(".stat-value").textContent = stats.gamesLost;
+        
+        const winRate = stats.totalGames > 0 ? Math.round((stats.gamesWon / stats.totalGames) * 100) : 0;
+        this.statsItems.winRate.querySelector(".stat-value").textContent = winRate + "%";
+        
+        this.statsItems.bestScore.querySelector(".stat-value").textContent = stats.bestScore;
+        this.statsItems.bestTile.querySelector(".stat-value").textContent = stats.bestTile;
     }
 
     showConfirm(message, callback) {

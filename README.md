@@ -12,6 +12,7 @@ Play it here: [https://jet2511.github.io/2048/](https://jet2511.github.io/2048/)
 - **High Scores**: Best scores tracked separately for each grid size
 - **Undo Move**: Revert your last moves (with score penalty)
 - **Dark Mode**: Full dark mode support
+- **Game Statistics**: Track wins, losses, win rate per game mode
 - **Responsive**: Works on desktop and mobile
 
 ## How to Play
