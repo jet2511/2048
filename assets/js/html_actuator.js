@@ -2,23 +2,73 @@ export default class HTMLActuator {
     constructor() {
         this.tileContainer = document.querySelector(".tile-container");
         this.gridContainer = document.querySelector(".grid-container");
-        this.settingsPanel = document.querySelector(".settings-panel");
+        this.settingsModal = document.getElementById("settingsModal");
+        this.muteToggleBtn = document.querySelector(".mute-toggle");
+        this.timerContainer = document.querySelector(".timer-container");
         this.scoreContainer = document.querySelector(".score-container");
         this.bestContainer = document.querySelector(".best-container");
         this.messageContainer = document.querySelector(".game-message");
         this.sharingContainer = document.querySelector(".score-sharing");
         this.outerContainer = document.querySelector(".outerContainer");
+        this.leaderboardModal = document.getElementById("leaderboardModal");
+        this.saveLoadModal = document.getElementById("saveLoadModal");
 
         this.score = 0;
         this.size = 4; // Default size
+        this.skin = 'classic';
         this.setupConfirmModal();
         
         // Listen for window resize to handle responsiveness
         window.addEventListener("resize", () => {
             this.updateCSSVars(this.size);
         });
+
+        // The user can't zoom, but they can still rotate their device
+        window.addEventListener("orientationchange", () => {
+            this.setupGrid(this.size);
+            this.updateAllTiles();
+        });
     }
 
+    // Modal UI logic
+    showLeaderboard(leaderboardData) {
+        const list = this.leaderboardModal.querySelector('.leaderboard-list');
+        list.innerHTML = '';
+        if (leaderboardData.length === 0) {
+            list.innerHTML = '<li>Chưa có kỷ lục nào.</li>';
+        } else {
+            leaderboardData.forEach((entry, i) => {
+                const date = new Date(entry.date).toLocaleDateString();
+                list.innerHTML += `<li><span>#${i+1} - ${date}</span> <strong>${entry.score}</strong></li>`;
+            });
+        }
+        this.closeModals();
+        this.leaderboardModal.classList.add("is-open");
+    }
+
+    showSaveLoad(slotsData) {
+        const slots = this.saveLoadModal.querySelectorAll('.slot');
+        slots.forEach(slotEl => {
+            const id = slotEl.getAttribute('data-slot');
+            const info = slotsData[id];
+            const infoSpan = slotEl.querySelector('.slot-info');
+            if (info) {
+                infoSpan.textContent = `Slot ${id}: Score ${info.score} (${info.mode})`;
+            } else {
+                infoSpan.textContent = `Slot ${id}: Empty`;
+            }
+        });
+        this.closeModals();
+        this.saveLoadModal.classList.add("is-open");
+    }
+
+    closeModals() {
+        this.leaderboardModal.classList.remove("is-open");
+        this.saveLoadModal.classList.remove("is-open");
+        this.settingsModal.classList.remove("is-open");
+    }
+
+    // --- Settings panel & Modals ---
     setupConfirmModal() {
         this.confirmModal = document.createElement("div");
         this.confirmModal.classList.add("confirm-modal");
@@ -69,7 +119,22 @@ export default class HTMLActuator {
     }
 
     toggleSettings() {
-        this.settingsPanel.classList.toggle("is-open");
+        this.closeModals();
+        this.settingsModal.classList.add("is-open");
+    }
+
+    updateMuteButton(isEnabled) {
+        if (!this.muteToggleBtn) return;
+        const iconUnmuted = this.muteToggleBtn.querySelector(".icon-unmuted");
+        const iconMuted = this.muteToggleBtn.querySelector(".icon-muted");
+        
+        if (isEnabled) {
+            iconUnmuted.style.display = "block";
+            iconMuted.style.display = "none";
+        } else {
+            iconUnmuted.style.display = "none";
+            iconMuted.style.display = "block";
+        }
     }
 
     updateSizeHighlight(size) {
@@ -81,6 +146,38 @@ export default class HTMLActuator {
                 opt.classList.remove("active");
             }
         });
+    }
+
+    updateModeHighlight(mode) {
+        const options = document.querySelectorAll(".mode-option");
+        options.forEach(opt => {
+            if (opt.getAttribute("data-mode") === mode) {
+                opt.classList.add("active");
+            } else {
+                opt.classList.remove("active");
+            }
+        });
+    }
+
+    updateSkinHighlight(skin) {
+        this.skin = skin;
+        const options = document.querySelectorAll(".skin-option");
+        options.forEach(opt => {
+            if (opt.getAttribute("data-skin") === skin) {
+                opt.classList.add("active");
+            } else {
+                opt.classList.remove("active");
+            }
+        });
+    }
+
+    updateTimer(seconds, mode) {
+        if (mode === 'time' || mode === 'survival') {
+            this.timerContainer.style.display = "block";
+            this.timerContainer.textContent = mode === 'time' ? `${seconds}s` : `Survival: ${seconds}s`;
+        } else {
+            this.timerContainer.style.display = "none";
+        }
     }
 
     // Set up the grid background based on size
@@ -174,7 +271,20 @@ export default class HTMLActuator {
         this.applyClasses(wrapper, classes);
 
         inner.classList.add("tile-inner");
-        inner.textContent = tile.value;
+        
+        if (this.skin === 'emoji') {
+            const emojis = {
+                2: '🥚', 4: '🐣', 8: '🐥', 16: '🐔', 32: '🕊️', 
+                64: '🦆', 128: '🦅', 256: '🦉', 512: '🦇', 1024: '🐉', 
+                2048: '👑', 4096: '🌟', 8192: '💎'
+            };
+            inner.textContent = emojis[tile.value] || '🦄';
+            // Scale up emoji size slightly as they replace numbers
+            inner.style.fontSize = 'calc(var(--tile-size) * 0.55)';
+        } else {
+            inner.textContent = tile.value;
+            inner.style.fontSize = ''; // use CSS default
+        }
 
         if (tile.previousPosition) {
             // Make sure that the tile gets rendered in the previous position first

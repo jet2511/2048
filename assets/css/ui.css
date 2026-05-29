@@ -20,6 +20,19 @@ h1.title .title-link-shade {
     color: hsl(29, 17%, 68%);
 }
 
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.tools-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 .scores-container {
     text-align: right;
     display: flex;
@@ -78,6 +91,7 @@ h1.title .title-link-shade {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    margin-top: 15px;
     margin-bottom: 20px;
     gap: 20px;
 }
@@ -91,11 +105,10 @@ h1.title .title-link-shade {
 .buttons-container {
     display: flex;
     gap: 12px;
-    flex-shrink: 0;
     align-items: center;
 }
 
-.settings-toggle, .undo-button, .restart-button, .size-option, .theme-toggle {
+.settings-toggle, .mute-toggle, .leaderboard-toggle, .save-load-toggle, .undo-button, .restart-button, .size-option, .theme-toggle, .mode-option, .skin-option {
     background: #8f7a66;
     border-radius: 3px;
     padding: 0 20px;
@@ -111,47 +124,36 @@ h1.title .title-link-shade {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    white-space: nowrap;
 }
 
-.settings-toggle {
+.settings-toggle, .mute-toggle, .leaderboard-toggle, .save-load-toggle {
     padding: 0 !important;
     width: 42px;
 }
 
-.settings-toggle svg {
+.settings-toggle svg, .mute-toggle svg, .leaderboard-toggle svg, .save-load-toggle svg {
     width: 24px;
     height: 24px;
     transition: transform 0.4s ease;
 }
 
-.settings-toggle:hover svg {
-    transform: rotate(90deg);
+.settings-toggle:hover svg, .mute-toggle:hover svg, .leaderboard-toggle:hover svg, .save-load-toggle:hover svg {
+    transform: rotate(15deg) scale(1.1);
 }
 
-.settings-toggle:hover, .undo-button:hover, .restart-button:hover, .size-option:hover, .theme-toggle:hover {
+.settings-toggle:hover, .mute-toggle:hover, .leaderboard-toggle:hover, .save-load-toggle:hover, .undo-button:hover, .restart-button:hover, .size-option:hover, .theme-toggle:hover, .mode-option:hover, .skin-option:hover {
     background: #7f6a56;
 }
 
-.settings-toggle:active, .undo-button:active, .restart-button:active, .size-option:active, .theme-toggle:active {
+.settings-toggle:active, .mute-toggle:active, .leaderboard-toggle:active, .save-load-toggle:active, .undo-button:active, .restart-button:active, .size-option:active, .theme-toggle:active, .mode-option:active, .skin-option:active {
     transform: scale(0.95);
 }
 
-.settings-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    background: var(--field-bg);
-    border-radius: 6px;
-    margin-top: 10px;
-}
-
-.settings-panel.is-open {
-    max-height: 200px;
-    margin-bottom: 20px;
-}
-
 .game-settings {
-    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+    color: var(--text-color);
 }
 
 .setting-item {
@@ -161,14 +163,28 @@ h1.title .title-link-shade {
     margin-bottom: 15px;
 }
 
-.size-options {
+.size-options, .mode-options, .skin-options {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-.size-option.active {
+.size-option.active, .mode-option.active, .skin-option.active {
     background: var(--tile-gold);
     color: #776e65;
+}
+
+.timer-container {
+    background: var(--field-bg);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 0 15px;
+    border-radius: 3px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
 }
 
 .game-explanation {
@@ -220,20 +236,37 @@ hr {
         padding: 15px 10px;
     }
     .game-intro {
-        width: 55%;
+        width: 100%;
         display: block;
         line-height: 1.65;
+        margin-bottom: 15px;
     }
-    .restart-button {
-        width: 42%;
-        padding: 0;
-        display: block;
-        margin-top: 2px;
+    .above-game {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .buttons-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .undo-button, .restart-button {
+        flex: 1;
+        text-align: center;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .size-options, .mode-options, .skin-options {
+        justify-content: flex-start;
     }
 }
 
 /* Custom Confirmation Modal */
-.confirm-modal {
+.confirm-modal, .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -250,12 +283,12 @@ hr {
     backdrop-filter: blur(4px);
 }
 
-.confirm-modal.is-open {
+.confirm-modal.is-open, .modal-overlay.is-open {
     opacity: 1;
     visibility: visible;
 }
 
-.confirm-content {
+.confirm-content, .modal-content {
     background: var(--bg-color);
     padding: 30px;
     border-radius: 12px;
@@ -267,7 +300,7 @@ hr {
     text-align: center;
 }
 
-.confirm-modal.is-open .confirm-content {
+.confirm-modal.is-open .confirm-content, .modal-overlay.is-open .modal-content {
     transform: translateY(0);
 }
 
@@ -320,4 +353,65 @@ body.dark-mode .confirm-button.cancel {
 
 body.dark-mode .confirm-button.cancel:hover {
     background: #48484a;
+}
+
+/* Modals Extra */
+.modal-content h2 {
+    margin-top: 0;
+    color: var(--text-color);
+}
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    text-align: left;
+}
+.leaderboard-list li {
+    padding: 10px;
+    border-bottom: 1px solid #d8d4d0;
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-color);
+}
+.save-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+.slot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 6px;
+    color: var(--text-color);
+}
+body.dark-mode .slot {
+    background: rgba(255,255,255,0.05);
+}
+.slot-info {
+    flex-grow: 1;
+    text-align: left;
+}
+.save-btn, .load-btn {
+    background: var(--tile-gold);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    margin-left: 5px;
+}
+.close-modal-btn {
+    background: #8f7a66;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
 }

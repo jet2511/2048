@@ -27,25 +27,25 @@ export default class KeyboardInputManager {
 
     listen() {
         const map = {
-            38: 0, // Up
-            39: 1, // Right
-            40: 2, // Down
-            37: 3, // Left
-            75: 0, // Vim up
-            76: 1, // Vim right
-            74: 2, // Vim down
-            72: 3, // Vim left
-            87: 0, // W
-            68: 1, // D
-            83: 2, // S
-            65: 3 // A
+            "ArrowUp": 0, // Up
+            "ArrowRight": 1, // Right
+            "ArrowDown": 2, // Down
+            "ArrowLeft": 3, // Left
+            "k": 0, "K": 0, // Vim up
+            "l": 1, "L": 1, // Vim right
+            "j": 2, "J": 2, // Vim down
+            "h": 3, "H": 3, // Vim left
+            "w": 0, "W": 0, // W
+            "d": 1, "D": 1, // D
+            "s": 2, "S": 2, // S
+            "a": 3, "A": 3 // A
         };
 
         // Respond to direction keys
         document.addEventListener("keydown", event => {
             const modifiers = event.altKey || event.ctrlKey || event.metaKey ||
                 event.shiftKey;
-            const mapped = map[event.which];
+            const mapped = map[event.key];
 
             // Ignore the event if it's happening in a text field
             if (this.targetIsInput(event)) return;
@@ -58,12 +58,12 @@ export default class KeyboardInputManager {
             }
 
             // R key restarts the game
-            if (!modifiers && event.which === 82) {
+            if (!modifiers && (event.key === "r" || event.key === "R")) {
                 this.restart(event);
             }
 
             // Z or U key undos the move
-            if (!modifiers && (event.which === 90 || event.which === 85)) {
+            if (!modifiers && (event.key === "z" || event.key === "Z" || event.key === "u" || event.key === "U")) {
                 this.undo(event);
             }
         });
@@ -75,10 +75,43 @@ export default class KeyboardInputManager {
         this.bindButtonPress(".keep-playing-button", this.keepPlaying.bind(this));
         this.bindButtonPress(".theme-toggle", this.themeToggle.bind(this));
         this.bindButtonPress(".settings-toggle", this.settingsToggle.bind(this));
+        this.bindButtonPress(".mute-toggle", this.muteToggle.bind(this));
+        this.bindButtonPress(".leaderboard-toggle", this.leaderboardToggle.bind(this));
+        this.bindButtonPress(".save-load-toggle", this.saveLoadToggle.bind(this));
+
+        this.bindAll(".close-modal-btn", event => {
+            event.preventDefault();
+            this.emit("closeModals");
+        });
+
+        this.bindAll(".save-btn", event => {
+            event.preventDefault();
+            const slot = event.target.closest('.slot').getAttribute('data-slot');
+            this.emit("saveSlot", slot);
+        });
+
+        this.bindAll(".load-btn", event => {
+            event.preventDefault();
+            const slot = event.target.closest('.slot').getAttribute('data-slot');
+            this.emit("loadSlot", slot);
+        });
 
         this.bindAll(".size-option", event => {
+            event.preventDefault();
             const size = parseInt(event.target.getAttribute("data-size"));
             this.emit("changeSize", size);
+        });
+
+        this.bindAll(".mode-option", event => {
+            event.preventDefault();
+            const mode = event.target.getAttribute("data-mode");
+            this.emit("changeMode", mode);
+        });
+
+        this.bindAll(".skin-option", event => {
+            event.preventDefault();
+            const skin = event.target.getAttribute("data-skin");
+            this.emit("changeSkin", skin);
         });
 
         // Respond to swipe events
@@ -152,6 +185,21 @@ export default class KeyboardInputManager {
     settingsToggle(event) {
         event.preventDefault();
         this.emit("toggleSettings");
+    }
+
+    muteToggle(event) {
+        event.preventDefault();
+        this.emit("toggleMute");
+    }
+
+    leaderboardToggle(event) {
+        event.preventDefault();
+        this.emit("toggleLeaderboard");
+    }
+
+    saveLoadToggle(event) {
+        event.preventDefault();
+        this.emit("toggleSaveLoad");
     }
 
     bindAll(selector, fn) {
