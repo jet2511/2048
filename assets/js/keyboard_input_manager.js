@@ -114,6 +114,12 @@ export default class KeyboardInputManager {
             this.emit("changeSkin", skin);
         });
 
+        this.bindAll(".lang-option", event => {
+            event.preventDefault();
+            const lang = event.target.getAttribute("data-lang");
+            this.emit("changeLanguage", lang);
+        });
+
         // Respond to swipe events
         let touchStartClientX, touchStartClientY;
         const gameContainer = document.getElementsByClassName("game-container")[0];

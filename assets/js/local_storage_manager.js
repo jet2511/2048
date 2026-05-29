@@ -27,6 +27,7 @@ export default class LocalStorageManager {
         this.themeKey = "theme";
         this.skinKey = "skin"; // 'classic' or 'emoji'
         this.gameModeKey = "gameMode"; // 'classic', 'time', 'survival'
+        this.languageKey = "language"; // 'en', 'vi'
 
         const supported = this.localStorageSupported();
         this.storage = supported ? window.localStorage : fakeStorage;
@@ -114,6 +115,14 @@ export default class LocalStorageManager {
             score: state.score,
             mode: state.gameMode || 'classic'
         };
+    }
+
+    getLanguage() {
+        return this.storage.getItem(this.languageKey) || 'vi'; // Default to VI
+    }
+
+    setLanguage(lang) {
+        this.storage.setItem(this.languageKey, lang);
     }
 
     setItem(key, value) {

@@ -1,5 +1,6 @@
 import Grid from "./grid.js";
 import Tile from "./tile.js";
+import { t } from "./i18n.js";
 
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager, AudioManager) {
@@ -7,6 +8,7 @@ export default class GameManager {
         this.size = this.storageManager.getItem("gridSize") || size; // Size of the grid
         this.gameMode = this.storageManager.getItem("gameMode") || "classic";
         this.skin = this.storageManager.getItem("skin") || "classic";
+        this.language = this.storageManager.getLanguage();
 
         this.inputManager = new InputManager();
         this.actuator = new Actuator();
@@ -26,6 +28,7 @@ export default class GameManager {
         this.inputManager.on("changeMode", this.changeMode.bind(this));
         this.inputManager.on("changeSkin", this.changeSkin.bind(this));
         this.inputManager.on("changeTheme", this.changeTheme.bind(this));
+        this.inputManager.on("changeLanguage", this.changeLanguage.bind(this));
         this.inputManager.on("toggleSettings", this.toggleSettings.bind(this));
         this.inputManager.on("toggleMute", this.toggleMute.bind(this));
         this.inputManager.on("toggleLeaderboard", this.toggleLeaderboard.bind(this));
@@ -36,8 +39,30 @@ export default class GameManager {
 
         this.setup();
         this.applyTheme();
+        this.applyLanguage();
         this.actuator.updateSkinHighlight(this.skin);
         this.actuator.updateModeHighlight(this.gameMode);
+    }
+
+    applyLanguage() {
+        this.actuator.updateLanguageHighlight(this.language);
+        this.actuator.translateDOM(this.language);
+    }
+
+    changeLanguage(lang) {
+        if (this.language === lang) return;
+        this.language = lang;
+        this.storageManager.setLanguage(lang);
+        this.applyLanguage();
+        
+        // Re-render actuator elements that might be dynamic
+        this.actuator.actuate(this.grid, {
+            score: this.score,
+            over: this.over,
+            won: this.won,
+            bestScore: this.storageManager.getBestScore(),
+            terminated: this.isGameTerminated()
+        });
     }
 
     toggleMute() {
@@ -60,29 +85,45 @@ export default class GameManager {
     changeSize(size) {
         if (size === this.size) return;
 
-        // Custom UI confirmation instead of blocking confirm()
-        this.actuator.showConfirm("Dữ liệu hiện tại sẽ bị mất khi bạn đổi kích thước màn chơi. Bạn có chắc chắn muốn tiếp tục?", (confirmed) => {
-            if (confirmed) {
-                this.size = size;
-                this.storageManager.setItem("gridSize", size);
-                this.restart();
-            } else {
-                this.actuator.updateSizeHighlight(this.size);
-            }
-        });
+        const executeChange = () => {
+            this.size = size;
+            this.storageManager.setItem("gridSize", size);
+            this.restart();
+        };
+
+        if (!this.isGameTerminated() && this.score > 0) {
+            this.actuator.showConfirm(t("confirmSizeChange", this.language), (confirmed) => {
+                if (confirmed) {
+                    executeChange();
+                } else {
+                    this.actuator.updateSizeHighlight(this.size);
+                }
+            });
+        } else {
+            executeChange();
+        }
     }
 
     changeMode(mode) {
         if (mode === this.gameMode) return;
-        this.actuator.showConfirm("Dữ liệu hiện tại sẽ bị mất khi đổi chế độ chơi. Tiếp tục?", (confirmed) => {
-            if (confirmed) {
-                this.gameMode = mode;
-                this.storageManager.setItem("gameMode", mode);
-                this.restart();
-            } else {
-                this.actuator.updateModeHighlight(this.gameMode);
-            }
-        });
+
+        const executeMode = () => {
+            this.gameMode = mode;
+            this.storageManager.setItem("gameMode", mode);
+            this.restart();
+        };
+
+        if (!this.isGameTerminated() && this.score > 0) {
+            this.actuator.showConfirm(t("confirmModeChange", this.language), (confirmed) => {
+                if (confirmed) {
+                    executeMode();
+                } else {
+                    this.actuator.updateModeHighlight(this.gameMode);
+                }
+            });
+        } else {
+            executeMode();
+        }
     }
 
     changeSkin(skin) {
