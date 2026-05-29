@@ -21,8 +21,12 @@ const fakeStorage = {
 export default class LocalStorageManager {
     constructor() {
         this.bestScoreKey = "bestScore";
+        this.leaderboardKey = "leaderboard";
         this.gameStateKey = "gameState";
         this.noticeClosedKey = "noticeClosed";
+        this.themeKey = "theme";
+        this.skinKey = "skin"; // 'classic' or 'emoji'
+        this.gameModeKey = "gameMode"; // 'classic', 'time', 'survival'
 
         const supported = this.localStorageSupported();
         this.storage = supported ? window.localStorage : fakeStorage;
@@ -41,13 +45,30 @@ export default class LocalStorageManager {
         }
     }
 
-    // Best score getters/setters
-    getBestScore(size = 4) {
-        return this.storage.getItem(`${this.bestScoreKey}_${size}`) || 0;
+    getLeaderboard() {
+        try {
+            return JSON.parse(this.storage.getItem(this.leaderboardKey)) || [];
+        } catch {
+            return [];
+        }
     }
 
-    setBestScore(score, size = 4) {
-        this.storage.setItem(`${this.bestScoreKey}_${size}`, score);
+    // Best score getters/setters
+    getBestScore() {
+        return this.storage.getItem(this.bestScoreKey) || 0;
+    }
+
+    setBestScore(score) {
+        this.storage.setItem(this.bestScoreKey, score);
+    }
+
+    addLeaderboard(score) {
+        if (score === 0) return;
+        const board = this.getLeaderboard();
+        board.push({ score, date: new Date().toISOString() });
+        board.sort((a, b) => b.score - a.score);
+        const top5 = board.slice(0, 5);
+        this.storage.setItem(this.leaderboardKey, JSON.stringify(top5));
     }
 
     // Game state getters/setters and clearing
@@ -64,12 +85,35 @@ export default class LocalStorageManager {
         this.storage.removeItem(this.gameStateKey);
     }
 
-    setNoticeClosed(noticeClosed) {
-        this.storage.setItem(this.noticeClosedKey, JSON.stringify(noticeClosed));
+    setNoticeClosed(closed) {
+        this.storage.setItem(this.noticeClosedKey, JSON.stringify(closed));
     }
 
     getNoticeClosed() {
         return JSON.parse(this.storage.getItem(this.noticeClosedKey) || "false");
+    }
+
+    // --- SAVE SLOTS ---
+    saveGameSlot(slotId, state) {
+        this.storage.setItem(`saveSlot_${slotId}`, JSON.stringify(state));
+    }
+
+    loadGameSlot(slotId) {
+        try {
+            const stateJSON = this.storage.getItem(`saveSlot_${slotId}`);
+            return stateJSON ? JSON.parse(stateJSON) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    getGameSlotInfo(slotId) {
+        const state = this.loadGameSlot(slotId);
+        if (!state) return null;
+        return {
+            score: state.score,
+            mode: state.gameMode || 'classic'
+        };
     }
 
     setItem(key, value) {

@@ -103,12 +103,6 @@ body.dark-mode .tile.tile-4 .tile-inner {
 }
 
 @media screen and (max-width: 520px) {
-    .tile,
-    .tile .tile-inner {
-        width: 58px;
-        height: 58px;
-        line-height: 58px;
-    }
     .tile.tile-128 .tile-inner {
         font-size: 25px;
     }

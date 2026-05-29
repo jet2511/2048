@@ -32,14 +32,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.tile {
-    position: absolute;
-    width: var(--tile-size);
-    height: var(--tile-size);
-    transition: transform var(--transition-speed) var(--transition-easing);
-    will-change: transform;
-}
-
 .container {
     width: var(--game-container-size);
     margin: 0 auto;

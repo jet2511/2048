@@ -2,27 +2,47 @@ import Grid from "./grid.js";
 import Tile from "./tile.js";
 
 export default class GameManager {
-    constructor(size, InputManager, Actuator, StorageManager) {
+    constructor(size, InputManager, Actuator, StorageManager, AudioManager) {
         this.storageManager = new StorageManager();
         this.size = this.storageManager.getItem("gridSize") || size; // Size of the grid
+        this.gameMode = this.storageManager.getItem("gameMode") || "classic";
+        this.skin = this.storageManager.getItem("skin") || "classic";
+
         this.inputManager = new InputManager();
         this.actuator = new Actuator();
+        this.audioManager = new AudioManager();
 
         this.startTiles = 2;
         this.history = [];
         this.historyLimit = 15;
         this.nextId = 0;
+        this.timerInterval = null;
 
         this.inputManager.on("move", this.move.bind(this));
         this.inputManager.on("restart", this.restart.bind(this));
         this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
         this.inputManager.on("undo", this.undo.bind(this));
         this.inputManager.on("changeSize", this.changeSize.bind(this));
+        this.inputManager.on("changeMode", this.changeMode.bind(this));
+        this.inputManager.on("changeSkin", this.changeSkin.bind(this));
         this.inputManager.on("changeTheme", this.changeTheme.bind(this));
         this.inputManager.on("toggleSettings", this.toggleSettings.bind(this));
+        this.inputManager.on("toggleMute", this.toggleMute.bind(this));
+        this.inputManager.on("toggleLeaderboard", this.toggleLeaderboard.bind(this));
+        this.inputManager.on("toggleSaveLoad", this.toggleSaveLoad.bind(this));
+        this.inputManager.on("closeModals", this.closeModals.bind(this));
+        this.inputManager.on("saveSlot", this.saveSlot.bind(this));
+        this.inputManager.on("loadSlot", this.loadSlot.bind(this));
 
         this.setup();
         this.applyTheme();
+        this.actuator.updateSkinHighlight(this.skin);
+        this.actuator.updateModeHighlight(this.gameMode);
+    }
+
+    toggleMute() {
+        const isEnabled = this.audioManager.toggle();
+        this.actuator.updateMuteButton(isEnabled);
     }
 
     applyTheme() {
@@ -52,9 +72,66 @@ export default class GameManager {
         });
     }
 
+    changeMode(mode) {
+        if (mode === this.gameMode) return;
+        this.actuator.showConfirm("Dữ liệu hiện tại sẽ bị mất khi đổi chế độ chơi. Tiếp tục?", (confirmed) => {
+            if (confirmed) {
+                this.gameMode = mode;
+                this.storageManager.setItem("gameMode", mode);
+                this.restart();
+            } else {
+                this.actuator.updateModeHighlight(this.gameMode);
+            }
+        });
+    }
+
+    changeSkin(skin) {
+        if (skin === this.skin) return;
+        this.skin = skin;
+        this.storageManager.setItem("skin", skin);
+        this.actuator.updateSkinHighlight(this.skin);
+        this.actuate();
+    }
+
     toggleSettings() {
         this.actuator.toggleSettings();
         this.actuator.updateSizeHighlight(this.size);
+    }
+
+    toggleLeaderboard() {
+        const board = this.storageManager.getLeaderboard();
+        this.actuator.showLeaderboard(board);
+    }
+
+    toggleSaveLoad() {
+        const slotsData = {};
+        [1, 2, 3].forEach(id => {
+            slotsData[id] = this.storageManager.getGameSlotInfo(id);
+        });
+        this.actuator.showSaveLoad(slotsData);
+    }
+
+    closeModals() {
+        this.actuator.closeModals();
+    }
+
+    saveSlot(slotId) {
+        this.storageManager.saveGameSlot(slotId, this.serialize());
+        this.toggleSaveLoad();
+    }
+
+    loadSlot(slotId) {
+        const state = this.storageManager.loadGameSlot(slotId);
+        if (state) {
+            this.storageManager.setGameState(state);
+            if (state.gameMode) {
+                this.storageManager.setItem("gameMode", state.gameMode);
+                this.gameMode = state.gameMode;
+            }
+            this.actuator.closeModals();
+            this.actuator.continueGame(); // Clear won/keep playing messages
+            this.setup();
+        }
     }
 
     // Restart the game
@@ -78,6 +155,8 @@ export default class GameManager {
 
     // Set up the game
     setup() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+
         const previousState = this.storageManager.getGameState();
 
         // Reload the game from a previous game if present
@@ -89,21 +168,59 @@ export default class GameManager {
             this.won = previousState.won;
             this.isKeepPlaying = previousState.isKeepPlaying || previousState.keepPlaying;
             this.nextId = previousState.nextId || 0;
+            this.timeRemaining = previousState.timeRemaining;
         } else {
             this.grid = new Grid(this.size);
             this.score = 0;
             this.over = false;
             this.won = false;
             this.isKeepPlaying = false;
+            this.timeRemaining = this.gameMode === 'time' ? 60 : (this.gameMode === 'survival' ? 5 : null);
 
             // Add the initial tiles
             this.addStartTiles();
         }
 
+        if (this.gameMode === 'time' || this.gameMode === 'survival') {
+            if (!this.timeRemaining) this.timeRemaining = this.gameMode === 'time' ? 60 : 5;
+            this.startTimer();
+            this.actuator.updateTimer(this.timeRemaining, this.gameMode);
+        } else {
+            this.actuator.updateTimer(null, 'classic');
+        }
+
         // Update the actuator
         this.actuator.setupGrid(this.size);
         this.actuator.updateSizeHighlight(this.size);
+        this.actuator.updateModeHighlight(this.gameMode);
         this.actuate();
+    }
+
+    startTimer() {
+        this.timerInterval = setInterval(() => {
+            if (this.isGameTerminated()) {
+                clearInterval(this.timerInterval);
+                return;
+            }
+            this.timeRemaining--;
+            
+            if (this.gameMode === 'time' && this.timeRemaining <= 0) {
+                this.over = true;
+                this.storageManager.addLeaderboard(this.score);
+                clearInterval(this.timerInterval);
+                this.actuate();
+            } else if (this.gameMode === 'survival' && this.timeRemaining <= 0) {
+                this.addRandomTile();
+                this.timeRemaining = 5;
+                if (!this.movesAvailable()) {
+                    this.over = true;
+                    this.storageManager.addLeaderboard(this.score);
+                    clearInterval(this.timerInterval);
+                }
+                this.actuate();
+            }
+            this.actuator.updateTimer(this.timeRemaining, this.gameMode);
+        }, 1000);
     }
 
     // Set up the initial tiles to start the game with
@@ -153,7 +270,8 @@ export default class GameManager {
             over: this.over,
             won: this.won,
             isKeepPlaying: this.isKeepPlaying,
-            nextId: this.nextId
+            nextId: this.nextId,
+            timeRemaining: this.timeRemaining
         };
     }
 
@@ -213,8 +331,17 @@ export default class GameManager {
                         // Update the score
                         this.score += merged.value;
 
-                        // The mighty 2048 tile
-                        if (merged.value === 2048) this.won = true;
+                        // The mighty 2048 tile or bonus tiles
+                        if (merged.value >= 512 && merged.value > tile.value) {
+                            this.audioManager.playBonus();
+                        } else {
+                            this.audioManager.playMerge();
+                        }
+
+                        if (merged.value === 2048) {
+                            this.won = true;
+                            this.audioManager.playWin();
+                        }
                     } else {
                         this.moveTile(tile, positions.farthest);
                     }
@@ -227,16 +354,27 @@ export default class GameManager {
         });
 
         if (moved) {
+            // Play slide sound if no merge happened to overwrite it
+            // (In a more complex implementation we'd track if ANY merge occurred, 
+            // but WebAudio can handle overlapping sounds fine)
+            this.audioManager.playSlide();
+
+            if (this.gameMode === 'time') {
+                this.timeRemaining = Math.min(60, this.timeRemaining + 1);
+                this.actuator.updateTimer(this.timeRemaining, this.gameMode);
+            }
+
             // Save to history
             this.history.push(previousState);
             if (this.history.length > this.historyLimit) {
-                this.history.shift();
+                this.history.shift(); // Keep history within limit
             }
 
             this.addRandomTile();
 
             if (!this.movesAvailable()) {
                 this.over = true; // Game over!
+                this.storageManager.addLeaderboard(this.score);
             }
 
             this.actuate();
