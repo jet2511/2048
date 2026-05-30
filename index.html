@@ -77,18 +77,18 @@
                         </a>
                     </div>
                     <div class="scores-container">
-                        <div class="score-container">0</div>
-                        <div class="best-container">0</div>
+                        <div class="score-container" data-i18n-title="scoreTitle">0</div>
+                        <div class="best-container" data-i18n-title="bestTitle">0</div>
                     </div>
                 </div>
             </div>
 
             <div class="above-game">
-                <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+                <p class="game-intro" data-i18n="gameIntro">Join the numbers and get to the <strong>2048 tile!</strong></p>
                 <div class="timer-container" style="display:none;">60s</div>
                 <div class="buttons-container">
-                    <a class="undo-button" role="button" tabindex="0">Undo</a>
-                    <a class="restart-button" role="button" tabindex="0">New Game</a>
+                    <a class="undo-button" role="button" tabindex="0" data-i18n="undo">Undo</a>
+                    <a class="restart-button" role="button" tabindex="0" data-i18n="newGame">New Game</a>
                 </div>
             </div>
 
@@ -96,8 +96,8 @@
                 <div class="game-message">
                     <p></p>
                     <div class="lower">
-                        <a class="keep-playing-button" role="button" tabindex="0">Keep going</a>
-                        <a class="retry-button" role="button" tabindex="0">Try again</a>
+                        <a class="keep-playing-button" role="button" tabindex="0" data-i18n="keepGoing">Keep going</a>
+                        <a class="retry-button" role="button" tabindex="0" data-i18n="tryAgain">Try again</a>
                         <div class="score-sharing"></div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                 <div class="tile-container"></div>
             </div>
 
-            <p class="game-explanation">
+            <p class="game-explanation" data-i18n="howToPlay">
                 <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles.
                 When two tiles with the same number touch, they <strong>merge into one!</strong>
             </p>
@@ -118,50 +118,57 @@
 
     <div class="modal-overlay" id="leaderboardModal">
         <div class="modal-content">
-            <h2>Top 5 High Scores</h2>
+            <h2 data-i18n="top5">Top 5 High Scores</h2>
             <ul class="leaderboard-list"></ul>
-            <button class="close-modal-btn">Close</button>
+            <button class="close-modal-btn" data-i18n="close">Close</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="saveLoadModal">
         <div class="modal-content">
-            <h2>Save / Load Game</h2>
+            <h2 data-i18n="saveLoad">Save / Load Game</h2>
             <div class="save-slots">
                 <div class="slot" data-slot="1">
                     <span class="slot-info">Slot 1: Empty</span>
-                    <button class="save-btn">Save</button>
-                    <button class="load-btn">Load</button>
+                    <button class="save-btn" data-i18n="save">Save</button>
+                    <button class="load-btn" data-i18n="load">Load</button>
                 </div>
                 <div class="slot" data-slot="2">
                     <span class="slot-info">Slot 2: Empty</span>
-                    <button class="save-btn">Save</button>
-                    <button class="load-btn">Load</button>
+                    <button class="save-btn" data-i18n="save">Save</button>
+                    <button class="load-btn" data-i18n="load">Load</button>
                 </div>
                 <div class="slot" data-slot="3">
                     <span class="slot-info">Slot 3: Empty</span>
-                    <button class="save-btn">Save</button>
-                    <button class="load-btn">Load</button>
+                    <button class="save-btn" data-i18n="save">Save</button>
+                    <button class="load-btn" data-i18n="load">Load</button>
                 </div>
             </div>
-            <button class="close-modal-btn">Close</button>
+            <button class="close-modal-btn" data-i18n="close">Close</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-content">
-            <h2>Settings</h2>
+            <h2 data-i18n="settings">Settings</h2>
             <div class="game-settings">
                 <div class="setting-item">
-                    <span>Mode:</span>
-                    <div class="mode-options">
-                        <a class="mode-option active" data-mode="classic" role="button" tabindex="0">Classic</a>
-                        <a class="mode-option" data-mode="time" role="button" tabindex="0">Time Attack</a>
-                        <a class="mode-option" data-mode="survival" role="button" tabindex="0">Survival</a>
+                    <span data-i18n="language">Language:</span>
+                    <div class="language-options">
+                        <a class="lang-option active" data-lang="en" role="button" tabindex="0">EN</a>
+                        <a class="lang-option" data-lang="vi" role="button" tabindex="0">VI</a>
                     </div>
                 </div>
                 <div class="setting-item">
-                    <span>Grid Size:</span>
+                    <span data-i18n="mode">Mode:</span>
+                    <div class="mode-options">
+                        <a class="mode-option active" data-mode="classic" role="button" tabindex="0" data-i18n="classic">Classic</a>
+                        <a class="mode-option" data-mode="time" role="button" tabindex="0" data-i18n="timeAttack">Time Attack</a>
+                        <a class="mode-option" data-mode="survival" role="button" tabindex="0" data-i18n="survival">Survival</a>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span data-i18n="gridSize">Grid Size:</span>
                     <div class="size-options">
                         <a class="size-option" data-size="3" role="button" tabindex="0">3x3</a>
                         <a class="size-option active" data-size="4" role="button" tabindex="0">4x4</a>
@@ -170,18 +177,18 @@
                     </div>
                 </div>
                 <div class="setting-item">
-                    <span>Skin:</span>
+                    <span data-i18n="skin">Skin:</span>
                     <div class="skin-options">
-                        <a class="skin-option active" data-skin="classic" role="button" tabindex="0">Numbers</a>
-                        <a class="skin-option" data-skin="emoji" role="button" tabindex="0">Emoji</a>
+                        <a class="skin-option active" data-skin="classic" role="button" tabindex="0" data-i18n="numbers">Numbers</a>
+                        <a class="skin-option" data-skin="emoji" role="button" tabindex="0" data-i18n="emoji">Emoji</a>
                     </div>
                 </div>
                 <div class="setting-item">
-                    <span>Theme:</span>
-                    <a class="theme-toggle" role="button" tabindex="0">Dark Mode</a>
+                    <span data-i18n="theme">Theme:</span>
+                    <a class="theme-toggle" role="button" tabindex="0" data-i18n="darkMode">Dark Mode</a>
                 </div>
             </div>
-            <button class="close-modal-btn">Close</button>
+            <button class="close-modal-btn" data-i18n="close">Close</button>
         </div>
     </div>
 

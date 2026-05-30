@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 export default class HTMLActuator {
     constructor() {
         this.tileContainer = document.querySelector(".tile-container");
@@ -35,7 +37,7 @@ export default class HTMLActuator {
         const list = this.leaderboardModal.querySelector('.leaderboard-list');
         list.innerHTML = '';
         if (leaderboardData.length === 0) {
-            list.innerHTML = '<li>Chưa có kỷ lục nào.</li>';
+            list.innerHTML = `<li>${t('noRecords', this.lang)}</li>`;
         } else {
             leaderboardData.forEach((entry, i) => {
                 const date = new Date(entry.date).toLocaleDateString();
@@ -53,9 +55,10 @@ export default class HTMLActuator {
             const info = slotsData[id];
             const infoSpan = slotEl.querySelector('.slot-info');
             if (info) {
-                infoSpan.textContent = `Slot ${id}: Score ${info.score} (${info.mode})`;
+                const modeName = t(info.mode, this.lang);
+                infoSpan.textContent = t('slotScore', this.lang, id, info.score, modeName);
             } else {
-                infoSpan.textContent = `Slot ${id}: Empty`;
+                infoSpan.textContent = t('slotEmpty', this.lang, id);
             }
         });
         this.closeModals();
@@ -84,10 +87,12 @@ export default class HTMLActuator {
         
         const cancelBtn = document.createElement("a");
         cancelBtn.classList.add("confirm-button", "cancel");
+        cancelBtn.setAttribute("data-i18n", "cancel");
         cancelBtn.textContent = "Hủy";
         
         const confirmBtn = document.createElement("a");
         confirmBtn.classList.add("confirm-button", "confirm");
+        confirmBtn.setAttribute("data-i18n", "continueBtn");
         confirmBtn.textContent = "Tiếp tục";
         
         buttons.appendChild(cancelBtn);
@@ -141,6 +146,18 @@ export default class HTMLActuator {
         const options = document.querySelectorAll(".size-option");
         options.forEach(opt => {
             if (parseInt(opt.getAttribute("data-size")) === size) {
+                opt.classList.add("active");
+            } else {
+                opt.classList.remove("active");
+            }
+        });
+    }
+
+    updateLanguageHighlight(lang) {
+        this.lang = lang;
+        const options = document.querySelectorAll(".lang-option");
+        options.forEach(opt => {
+            if (opt.getAttribute("data-lang") === lang) {
                 opt.classList.add("active");
             } else {
                 opt.classList.remove("active");
@@ -350,10 +367,10 @@ export default class HTMLActuator {
 
     message(won) {
         const type = won ? "game-won" : "game-over";
-        const message = won ? "You win!" : "Game over!";
+        const messageText = won ? t("gameWon", this.lang) : t("gameOver", this.lang);
 
         this.messageContainer.classList.add(type);
-        this.messageContainer.querySelectorAll("p")[0].textContent = message;
+        this.messageContainer.querySelectorAll("p")[0].textContent = messageText;
 
         this.clearContainer(this.sharingContainer);
         this.sharingContainer.appendChild(this.scoreTweetButton());
@@ -366,13 +383,35 @@ export default class HTMLActuator {
 
     setDarkMode(enabled) {
         const themeToggle = document.querySelector(".theme-toggle");
+        this.isDarkMode = enabled;
         if (enabled) {
             document.body.classList.add("dark-mode");
-            if (themeToggle) themeToggle.textContent = "Light Mode";
+            if (themeToggle) themeToggle.textContent = t("lightMode", this.lang);
         } else {
             document.body.classList.remove("dark-mode");
-            if (themeToggle) themeToggle.textContent = "Dark Mode";
+            if (themeToggle) themeToggle.textContent = t("darkMode", this.lang);
         }
+    }
+
+    translateDOM(lang) {
+        this.lang = lang;
+        
+        // Translate simple innerHTML/textContent
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            el.innerHTML = t(key, lang);
+        });
+        
+        // Translate attributes (like title or aria-label if needed in the future)
+        const titleElements = document.querySelectorAll('[data-i18n-title]');
+        titleElements.forEach(el => {
+            const key = el.getAttribute('data-i18n-title');
+            el.setAttribute('data-title', t(key, lang)); // Or just textContent if it's the score label
+        });
+        
+        // Manual updates for dynamic text
+        this.setDarkMode(this.isDarkMode);
     }
 
     scoreTweetButton() {

@@ -69,12 +69,9 @@ h1.title .title-link-shade {
     color: #eee4da;
 }
 
-.score-container:after {
-    content: "Score";
-}
-
+.score-container:after,
 .best-container:after {
-    content: "Best";
+    content: attr(data-title);
 }
 
 .score-container .score-addition {
@@ -163,14 +160,25 @@ h1.title .title-link-shade {
     margin-bottom: 15px;
 }
 
-.size-options, .mode-options, .skin-options {
+.size-options, .mode-options, .skin-options, .language-options {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     justify-content: flex-end;
 }
 
-.size-option.active, .mode-option.active, .skin-option.active {
+.size-option, .mode-option, .skin-option, .theme-toggle, .lang-option {
+    background: var(--field-bg);
+    padding: 5px 15px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.size-option.active, .mode-option.active, .skin-option.active, .lang-option.active {
     background: var(--tile-gold);
     color: #776e65;
 }
@@ -260,7 +268,7 @@ hr {
         align-items: flex-start;
         gap: 8px;
     }
-    .size-options, .mode-options, .skin-options {
+    .size-options, .mode-options, .skin-options, .language-options {
         justify-content: flex-start;
     }
 }
@@ -281,6 +289,10 @@ hr {
     visibility: hidden;
     transition: all 0.3s ease;
     backdrop-filter: blur(4px);
+}
+
+.confirm-modal {
+    z-index: 2000; /* Ensure it shows above settings modal */
 }
 
 .confirm-modal.is-open, .modal-overlay.is-open {
@@ -404,6 +416,7 @@ body.dark-mode .slot {
     font-weight: bold;
     color: white;
     margin-left: 5px;
+    font-family: inherit;
 }
 .close-modal-btn {
     background: #8f7a66;
@@ -414,4 +427,5 @@ body.dark-mode .slot {
     cursor: pointer;
     font-weight: bold;
     margin-top: 10px;
+    font-family: inherit;
 }
