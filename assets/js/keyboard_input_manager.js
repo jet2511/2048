@@ -212,7 +212,6 @@ export default class KeyboardInputManager {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
             element.addEventListener("click", fn);
-            element.addEventListener(this.eventTouchend, fn);
         });
     }
 
@@ -220,7 +219,6 @@ export default class KeyboardInputManager {
         const button = document.querySelector(selector);
         if (button) {
             button.addEventListener("click", fn);
-            button.addEventListener(this.eventTouchend, fn);
         }
     }
 

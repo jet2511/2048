@@ -119,6 +119,18 @@
     display: block;
 }
 
+body.dark-mode .grid-cell {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .game-message {
+    background: rgba(44, 44, 46, 0.85);
+}
+
+body.dark-mode .game-message.game-won {
+    background: rgba(255, 204, 51, 0.5);
+}
+
 @media screen and (max-width: 520px) {
     .game-container {
         margin-top: 17px;

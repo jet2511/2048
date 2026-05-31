@@ -77,8 +77,8 @@
                         </a>
                     </div>
                     <div class="scores-container">
-                        <div class="score-container" data-i18n-title="scoreTitle">0</div>
-                        <div class="best-container" data-i18n-title="bestTitle">0</div>
+                        <div class="score-container" data-i18n-title="scoreTitle" aria-live="polite">0</div>
+                        <div class="best-container" data-i18n-title="bestTitle" aria-live="polite">0</div>
                     </div>
                 </div>
             </div>
@@ -92,8 +92,8 @@
                 </div>
             </div>
 
-            <div class="game-container">
-                <div class="game-message">
+            <div class="game-container" role="application">
+                <div class="game-message" role="alert">
                     <p></p>
                     <div class="lower">
                         <a class="keep-playing-button" role="button" tabindex="0" data-i18n="keepGoing">Keep going</a>

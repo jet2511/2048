@@ -68,7 +68,12 @@ export default class Grid {
 
     // Check if there are any cells available
     cellsAvailable() {
-        return !!this.availableCells().length;
+        for (let x = 0; x < this.size; x++) {
+            for (let y = 0; y < this.size; y++) {
+                if (!this.cells[x][y]) return true;
+            }
+        }
+        return false;
     }
 
     // Check if the specified cell is taken

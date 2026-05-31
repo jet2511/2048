@@ -84,6 +84,10 @@ h1.title .title-link-shade {
     z-index: 100;
 }
 
+body.dark-mode .score-container .score-addition {
+    color: rgba(224, 224, 224, 0.9);
+}
+
 .above-game {
     display: flex;
     justify-content: flex-end;

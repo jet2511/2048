@@ -27,8 +27,7 @@ export default class HTMLActuator {
 
         // The user can't zoom, but they can still rotate their device
         window.addEventListener("orientationchange", () => {
-            this.setupGrid(this.size);
-            this.updateAllTiles();
+            this.updateCSSVars(this.size);
         });
     }
 
@@ -88,12 +87,12 @@ export default class HTMLActuator {
         const cancelBtn = document.createElement("a");
         cancelBtn.classList.add("confirm-button", "cancel");
         cancelBtn.setAttribute("data-i18n", "cancel");
-        cancelBtn.textContent = "Hủy";
+        cancelBtn.textContent = t("cancel", this.lang);
         
         const confirmBtn = document.createElement("a");
         confirmBtn.classList.add("confirm-button", "confirm");
         confirmBtn.setAttribute("data-i18n", "continueBtn");
-        confirmBtn.textContent = "Tiếp tục";
+        confirmBtn.textContent = t("continueBtn", this.lang);
         
         buttons.appendChild(cancelBtn);
         buttons.appendChild(confirmBtn);
@@ -268,9 +267,7 @@ export default class HTMLActuator {
     }
 
     clearContainer(container) {
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
-        }
+        container.replaceChildren();
     }
 
     addTile(tile) {
@@ -293,7 +290,8 @@ export default class HTMLActuator {
             const emojis = {
                 2: '🥚', 4: '🐣', 8: '🐥', 16: '🐔', 32: '🕊️', 
                 64: '🦆', 128: '🦅', 256: '🦉', 512: '🦇', 1024: '🐉', 
-                2048: '👑', 4096: '🌟', 8192: '💎'
+                2048: '👑', 4096: '🌟', 8192: '💎',
+                16384: '🔮', 32768: '🚀', 65536: '🌌', 131072: '👽'
             };
             inner.textContent = emojis[tile.value] || '🦄';
             // Scale up emoji size slightly as they replace numbers
@@ -417,7 +415,7 @@ export default class HTMLActuator {
     scoreTweetButton() {
         const tweet = document.createElement("a");
         tweet.classList.add("twitter-share-button");
-        tweet.setAttribute("href", "https://twitter.com/share");
+        tweet.setAttribute("href", "https://x.com/intent/post");
         tweet.setAttribute("data-url", "https://jet2511.github.io/2048/");
         tweet.textContent = "Tweet";
 

@@ -312,7 +312,8 @@ export default class GameManager {
             won: this.won,
             isKeepPlaying: this.isKeepPlaying,
             nextId: this.nextId,
-            timeRemaining: this.timeRemaining
+            timeRemaining: this.timeRemaining,
+            gameMode: this.gameMode
         };
     }
 
@@ -445,7 +446,7 @@ export default class GameManager {
         });
 
         // Apply 100 point penalty for Undo
-        this.score = Math.max(0, state.score - 100);
+        this.score = Math.max(0, this.score - 100);
         
         this.over = state.over;
         this.won = state.won;
@@ -454,17 +455,16 @@ export default class GameManager {
         this.actuate();
     }
 
+    static VECTORS = Object.freeze([
+        Object.freeze({ x: 0, y: -1 }), // Up
+        Object.freeze({ x: 1, y: 0 }), // Right
+        Object.freeze({ x: 0, y: 1 }), // Down
+        Object.freeze({ x: -1, y: 0 }) // Left
+    ]);
+
     // Get the vector representing the chosen direction
     getVector(direction) {
-        // Vectors representing tile movement
-        const map = {
-            0: { x: 0, y: -1 }, // Up
-            1: { x: 1, y: 0 }, // Right
-            2: { x: 0, y: 1 }, // Down
-            3: { x: -1, y: 0 } // Left
-        };
-
-        return map[direction];
+        return GameManager.VECTORS[direction];
     }
 
     // Build a list of positions to traverse in the right order
@@ -509,15 +509,12 @@ export default class GameManager {
                 const tile = this.grid.cellContent({ x, y });
 
                 if (tile) {
-                    for (let direction = 0; direction < 4; direction++) {
-                        const vector = this.getVector(direction);
-                        const cell = { x: x + vector.x, y: y + vector.y };
-                        const other = this.grid.cellContent(cell);
-
-                        if (other && other.value === tile.value) {
-                            return true; // These two tiles can be merged
-                        }
-                    }
+                    // Only check right and down to avoid duplicate checks
+                    const right = this.grid.cellContent({ x: x + 1, y });
+                    if (right && right.value === tile.value) return true;
+                    
+                    const down = this.grid.cellContent({ x, y: y + 1 });
+                    if (down && down.value === tile.value) return true;
                 }
             }
         }
