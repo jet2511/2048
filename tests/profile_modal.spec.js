@@ -13,9 +13,8 @@ test.describe('Unified Profile & Leaderboard Modal Tests', () => {
     const profileModal = page.locator('#profileModal');
     await expect(profileModal).toHaveClass(/is-open/);
 
-    const googleBtn = page.locator('#googleLoginBtn');
-    await expect(googleBtn).toBeVisible();
-    await expect(googleBtn).toContainText('Sign in with Google');
+    const globalTab = page.locator('#global-leaderboard-tab');
+    await expect(globalTab).toHaveClass(/active/);
   });
 
   test('should switch between all 3 tabs (Account, Global, Local)', async ({ page }) => {
