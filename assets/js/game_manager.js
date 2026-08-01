@@ -221,7 +221,11 @@ export default class GameManager {
     }
 
     toggleSettings() {
-        this.actuator.toggleSettings();
+        const slotsData = {};
+        [1, 2, 3].forEach(id => {
+            slotsData[id] = this.storageManager.getGameSlotInfo(id);
+        });
+        this.actuator.toggleSettings(slotsData);
         this.actuator.updateSizeHighlight(this.size);
     }
 
@@ -230,11 +234,7 @@ export default class GameManager {
     }
 
     toggleSaveLoad() {
-        const slotsData = {};
-        [1, 2, 3].forEach(id => {
-            slotsData[id] = this.storageManager.getGameSlotInfo(id);
-        });
-        this.actuator.showSaveLoad(slotsData);
+        this.toggleSettings();
     }
 
     closeModals() {
@@ -243,7 +243,7 @@ export default class GameManager {
 
     saveSlot(slotId) {
         this.storageManager.saveGameSlot(slotId, this.serialize());
-        this.toggleSaveLoad();
+        this.toggleSettings();
     }
 
     loadSlot(slotId) {

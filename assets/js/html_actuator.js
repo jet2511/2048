@@ -141,7 +141,8 @@ export default class HTMLActuator {
     }
 
     showSaveLoad(slotsData) {
-        const slots = this.saveLoadModal.querySelectorAll('.slot');
+        if (!this.settingsModal || !slotsData) return;
+        const slots = this.settingsModal.querySelectorAll('.slot');
         slots.forEach(slotEl => {
             const id = slotEl.getAttribute('data-slot');
             const info = slotsData[id];
@@ -153,12 +154,9 @@ export default class HTMLActuator {
                 infoSpan.textContent = t('slotEmpty', this.lang, id);
             }
         });
-        this.closeModals();
-        this.saveLoadModal.classList.add("is-open");
     }
 
     closeModals() {
-        this.saveLoadModal.classList.remove("is-open");
         this.settingsModal.classList.remove("is-open");
         if (this.profileModal) this.profileModal.classList.remove("is-open");
     }
@@ -215,8 +213,9 @@ export default class HTMLActuator {
         }
     }
 
-    toggleSettings() {
+    toggleSettings(slotsData) {
         this.closeModals();
+        if (slotsData) this.showSaveLoad(slotsData);
         this.settingsModal.classList.add("is-open");
     }
 

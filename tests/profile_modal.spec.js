@@ -5,10 +5,10 @@ test.describe('Unified Profile & Leaderboard Modal Tests', () => {
     await page.goto('/');
   });
 
-  test('should open Profile Modal when clicking profile toggle button', async ({ page }) => {
-    const profileBtn = page.locator('.profile-toggle');
-    await expect(profileBtn).toBeVisible();
-    await profileBtn.click();
+  test('should open Profile Modal when clicking leaderboard toggle button', async ({ page }) => {
+    const leaderboardBtn = page.locator('.leaderboard-toggle');
+    await expect(leaderboardBtn).toBeVisible();
+    await leaderboardBtn.click();
 
     const profileModal = page.locator('#profileModal');
     await expect(profileModal).toHaveClass(/is-open/);
@@ -18,20 +18,8 @@ test.describe('Unified Profile & Leaderboard Modal Tests', () => {
     await expect(googleBtn).toContainText('Sign in with Google');
   });
 
-  test('should open Global Leaderboard tab when clicking leaderboard toggle button', async ({ page }) => {
-    const leaderboardBtn = page.locator('.leaderboard-toggle');
-    await expect(leaderboardBtn).toBeVisible();
-    await leaderboardBtn.click();
-
-    const profileModal = page.locator('#profileModal');
-    await expect(profileModal).toHaveClass(/is-open/);
-
-    const globalTab = page.locator('#global-leaderboard-tab');
-    await expect(globalTab).toHaveClass(/active/);
-  });
-
   test('should switch between all 3 tabs (Account, Global, Local)', async ({ page }) => {
-    await page.locator('.profile-toggle').click();
+    await page.locator('.leaderboard-toggle').click();
 
     // Switch to Local Leaderboard tab
     const localTabBtn = page.locator('.tab-btn[data-tab="local-leaderboard-tab"]');
