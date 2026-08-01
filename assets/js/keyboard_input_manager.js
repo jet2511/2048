@@ -66,6 +66,20 @@ export default class KeyboardInputManager {
             if (!modifiers && (event.key === "z" || event.key === "Z" || event.key === "u" || event.key === "U")) {
                 this.undo(event);
             }
+
+            // Escape key closes modals
+            if (event.key === "Escape") {
+                this.emit("closeModals");
+            }
+        });
+
+        // Click on modal overlay backdrop closes modal
+        document.querySelectorAll(".modal-overlay").forEach(overlay => {
+            overlay.addEventListener("click", event => {
+                if (event.target === overlay) {
+                    this.emit("closeModals");
+                }
+            });
         });
 
         // Respond to button presses
@@ -162,6 +176,10 @@ export default class KeyboardInputManager {
             const absDy = Math.abs(dy);
 
             if (Math.max(absDx, absDy) > 5) {
+                // Trigger haptic feedback if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
                 // (right : left) : (down : up)
                 this.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
             }
@@ -212,7 +230,6 @@ export default class KeyboardInputManager {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
             element.addEventListener("click", fn);
-            element.addEventListener(this.eventTouchend, fn);
         });
     }
 
@@ -220,8 +237,19 @@ export default class KeyboardInputManager {
         const button = document.querySelector(selector);
         if (button) {
             button.addEventListener("click", fn);
-            button.addEventListener(this.eventTouchend, fn);
         }
+    }
+
+    destroy() {
+        if (this.keydownHandler) {
+            document.removeEventListener("keydown", this.keydownHandler);
+        }
+        if (this.gameContainer) {
+            if (this.touchstartHandler) this.gameContainer.removeEventListener(this.eventTouchstart, this.touchstartHandler);
+            if (this.touchmoveHandler) this.gameContainer.removeEventListener(this.eventTouchmove, this.touchmoveHandler);
+            if (this.touchendHandler) this.gameContainer.removeEventListener(this.eventTouchend, this.touchendHandler);
+        }
+        this.events = {};
     }
 
     targetIsInput(event) {

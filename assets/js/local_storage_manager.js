@@ -6,7 +6,7 @@ const fakeStorage = {
     },
 
     getItem(id) {
-        return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
+        return Object.hasOwn(this._data, id) ? this._data[id] : undefined;
     },
 
     removeItem(id) {
@@ -55,12 +55,14 @@ export default class LocalStorageManager {
     }
 
     // Best score getters/setters
-    getBestScore() {
-        return this.storage.getItem(this.bestScoreKey) || 0;
+    getBestScore(size) {
+        const key = size ? `${this.bestScoreKey}_${size}` : this.bestScoreKey;
+        return parseInt(this.storage.getItem(key), 10) || 0;
     }
 
-    setBestScore(score) {
-        this.storage.setItem(this.bestScoreKey, score);
+    setBestScore(score, size) {
+        const key = size ? `${this.bestScoreKey}_${size}` : this.bestScoreKey;
+        this.storage.setItem(key, score);
     }
 
     addLeaderboard(score) {

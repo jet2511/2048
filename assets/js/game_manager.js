@@ -1,6 +1,9 @@
 import Grid from "./grid.js";
 import Tile from "./tile.js";
 import { t } from "./i18n.js";
+import ClassicMode from "./modes/classic_mode.js";
+import TimeAttackMode from "./modes/time_attack_mode.js";
+import SurvivalMode from "./modes/survival_mode.js";
 
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager, AudioManager) {
@@ -18,7 +21,7 @@ export default class GameManager {
         this.history = [];
         this.historyLimit = 15;
         this.nextId = 0;
-        this.timerInterval = null;
+        this.modeStrategy = null;
 
         this.inputManager.on("move", this.move.bind(this));
         this.inputManager.on("restart", this.restart.bind(this));
@@ -42,6 +45,34 @@ export default class GameManager {
         this.applyLanguage();
         this.actuator.updateSkinHighlight(this.skin);
         this.actuator.updateModeHighlight(this.gameMode);
+    }
+
+    createModeStrategy(mode) {
+        if (this.modeStrategy) {
+            this.modeStrategy.destroy();
+        }
+
+        const options = {
+            onTimeUpdate: (timeRemaining, modeName) => {
+                this.timeRemaining = timeRemaining;
+                this.actuator.updateTimer(timeRemaining, modeName);
+            },
+            onTimeOut: () => {
+                this.over = true;
+                this.storageManager.addLeaderboard(this.score);
+                this.actuate();
+            }
+        };
+
+        switch (mode) {
+            case "time":
+                return new TimeAttackMode(options);
+            case "survival":
+                return new SurvivalMode(options);
+            case "classic":
+            default:
+                return new ClassicMode(options);
+        }
     }
 
     applyLanguage() {
@@ -196,8 +227,6 @@ export default class GameManager {
 
     // Set up the game
     setup() {
-        if (this.timerInterval) clearInterval(this.timerInterval);
-
         const previousState = this.storageManager.getGameState();
 
         // Reload the game from a previous game if present
@@ -216,19 +245,13 @@ export default class GameManager {
             this.over = false;
             this.won = false;
             this.isKeepPlaying = false;
-            this.timeRemaining = this.gameMode === 'time' ? 60 : (this.gameMode === 'survival' ? 5 : null);
 
             // Add the initial tiles
             this.addStartTiles();
         }
 
-        if (this.gameMode === 'time' || this.gameMode === 'survival') {
-            if (!this.timeRemaining) this.timeRemaining = this.gameMode === 'time' ? 60 : 5;
-            this.startTimer();
-            this.actuator.updateTimer(this.timeRemaining, this.gameMode);
-        } else {
-            this.actuator.updateTimer(null, 'classic');
-        }
+        this.modeStrategy = this.createModeStrategy(this.gameMode);
+        this.modeStrategy.init();
 
         // Update the actuator
         this.actuator.setupGrid(this.size);
@@ -312,7 +335,8 @@ export default class GameManager {
             won: this.won,
             isKeepPlaying: this.isKeepPlaying,
             nextId: this.nextId,
-            timeRemaining: this.timeRemaining
+            timeRemaining: this.timeRemaining,
+            gameMode: this.gameMode
         };
     }
 
@@ -400,9 +424,8 @@ export default class GameManager {
             // but WebAudio can handle overlapping sounds fine)
             this.audioManager.playSlide();
 
-            if (this.gameMode === 'time') {
-                this.timeRemaining = Math.min(60, this.timeRemaining + 1);
-                this.actuator.updateTimer(this.timeRemaining, this.gameMode);
+            if (this.modeStrategy) {
+                this.modeStrategy.onMove(moved);
             }
 
             // Save to history
@@ -445,7 +468,7 @@ export default class GameManager {
         });
 
         // Apply 100 point penalty for Undo
-        this.score = Math.max(0, state.score - 100);
+        this.score = Math.max(0, this.score - 100);
         
         this.over = state.over;
         this.won = state.won;
@@ -454,17 +477,16 @@ export default class GameManager {
         this.actuate();
     }
 
+    static VECTORS = Object.freeze([
+        Object.freeze({ x: 0, y: -1 }), // Up
+        Object.freeze({ x: 1, y: 0 }), // Right
+        Object.freeze({ x: 0, y: 1 }), // Down
+        Object.freeze({ x: -1, y: 0 }) // Left
+    ]);
+
     // Get the vector representing the chosen direction
     getVector(direction) {
-        // Vectors representing tile movement
-        const map = {
-            0: { x: 0, y: -1 }, // Up
-            1: { x: 1, y: 0 }, // Right
-            2: { x: 0, y: 1 }, // Down
-            3: { x: -1, y: 0 } // Left
-        };
-
-        return map[direction];
+        return GameManager.VECTORS[direction];
     }
 
     // Build a list of positions to traverse in the right order
@@ -509,15 +531,12 @@ export default class GameManager {
                 const tile = this.grid.cellContent({ x, y });
 
                 if (tile) {
-                    for (let direction = 0; direction < 4; direction++) {
-                        const vector = this.getVector(direction);
-                        const cell = { x: x + vector.x, y: y + vector.y };
-                        const other = this.grid.cellContent(cell);
-
-                        if (other && other.value === tile.value) {
-                            return true; // These two tiles can be merged
-                        }
-                    }
+                    // Only check right and down to avoid duplicate checks
+                    const right = this.grid.cellContent({ x: x + 1, y });
+                    if (right && right.value === tile.value) return true;
+                    
+                    const down = this.grid.cellContent({ x, y: y + 1 });
+                    if (down && down.value === tile.value) return true;
                 }
             }
         }

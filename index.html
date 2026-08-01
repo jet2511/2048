@@ -51,12 +51,12 @@
                 </h1>
                 <div class="header-right">
                     <div class="tools-container">
-                        <a class="leaderboard-toggle" title="Leaderboard" role="button" tabindex="0">
+                        <a class="leaderboard-toggle" title="Leaderboard" role="button" tabindex="0" aria-label="Leaderboard">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
                             </svg>
                         </a>
-                        <a class="save-load-toggle" title="Save/Load" role="button" tabindex="0">
+                        <a class="save-load-toggle" title="Save/Load" role="button" tabindex="0" aria-label="Save or Load Game">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                             </svg>
@@ -77,8 +77,8 @@
                         </a>
                     </div>
                     <div class="scores-container">
-                        <div class="score-container" data-i18n-title="scoreTitle">0</div>
-                        <div class="best-container" data-i18n-title="bestTitle">0</div>
+                        <div class="score-container" data-i18n-title="scoreTitle" aria-live="polite">0</div>
+                        <div class="best-container" data-i18n-title="bestTitle" aria-live="polite">0</div>
                     </div>
                 </div>
             </div>
@@ -92,8 +92,8 @@
                 </div>
             </div>
 
-            <div class="game-container">
-                <div class="game-message">
+            <div class="game-container" role="application">
+                <div class="game-message" role="alert">
                     <p></p>
                     <div class="lower">
                         <a class="keep-playing-button" role="button" tabindex="0" data-i18n="keepGoing">Keep going</a>
@@ -116,17 +116,19 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="leaderboardModal">
+    <div class="modal-overlay" id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
         <div class="modal-content">
-            <h2 data-i18n="top5">Top 5 High Scores</h2>
+            <button class="close-modal-btn modal-close-x" aria-label="Close modal">&times;</button>
+            <h2 id="leaderboardTitle" data-i18n="top5">Top 5 High Scores</h2>
             <ul class="leaderboard-list"></ul>
             <button class="close-modal-btn" data-i18n="close">Close</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="saveLoadModal">
+    <div class="modal-overlay" id="saveLoadModal" role="dialog" aria-modal="true" aria-labelledby="saveLoadTitle">
         <div class="modal-content">
-            <h2 data-i18n="saveLoad">Save / Load Game</h2>
+            <button class="close-modal-btn modal-close-x" aria-label="Close modal">&times;</button>
+            <h2 id="saveLoadTitle" data-i18n="saveLoad">Save / Load Game</h2>
             <div class="save-slots">
                 <div class="slot" data-slot="1">
                     <span class="slot-info">Slot 1: Empty</span>
@@ -148,9 +150,10 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="settingsModal">
+    <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="modal-content">
-            <h2 data-i18n="settings">Settings</h2>
+            <button class="close-modal-btn modal-close-x" aria-label="Close modal">&times;</button>
+            <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
             <div class="game-settings">
                 <div class="setting-item">
                     <span data-i18n="language">Language:</span>

@@ -27,8 +27,7 @@ export default class HTMLActuator {
 
         // The user can't zoom, but they can still rotate their device
         window.addEventListener("orientationchange", () => {
-            this.setupGrid(this.size);
-            this.updateAllTiles();
+            this.updateCSSVars(this.size);
         });
     }
 
@@ -88,12 +87,12 @@ export default class HTMLActuator {
         const cancelBtn = document.createElement("a");
         cancelBtn.classList.add("confirm-button", "cancel");
         cancelBtn.setAttribute("data-i18n", "cancel");
-        cancelBtn.textContent = "Hủy";
+        cancelBtn.textContent = t("cancel", this.lang);
         
         const confirmBtn = document.createElement("a");
         confirmBtn.classList.add("confirm-button", "confirm");
         confirmBtn.setAttribute("data-i18n", "continueBtn");
-        confirmBtn.textContent = "Tiếp tục";
+        confirmBtn.textContent = t("continueBtn", this.lang);
         
         buttons.appendChild(cancelBtn);
         buttons.appendChild(confirmBtn);
@@ -258,6 +257,8 @@ export default class HTMLActuator {
                 } else if (metadata.won) {
                     this.message(true); // You win!
                 }
+            } else {
+                this.clearMessage();
             }
         });
     }
@@ -268,9 +269,7 @@ export default class HTMLActuator {
     }
 
     clearContainer(container) {
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
-        }
+        container.replaceChildren();
     }
 
     addTile(tile) {
@@ -293,7 +292,8 @@ export default class HTMLActuator {
             const emojis = {
                 2: '🥚', 4: '🐣', 8: '🐥', 16: '🐔', 32: '🕊️', 
                 64: '🦆', 128: '🦅', 256: '🦉', 512: '🦇', 1024: '🐉', 
-                2048: '👑', 4096: '🌟', 8192: '💎'
+                2048: '👑', 4096: '🌟', 8192: '💎',
+                16384: '🔮', 32768: '🚀', 65536: '🌌', 131072: '👽'
             };
             inner.textContent = emojis[tile.value] || '🦄';
             // Scale up emoji size slightly as they replace numbers
@@ -316,6 +316,9 @@ export default class HTMLActuator {
             tile.mergedFrom.forEach(merged => {
                 this.addTile(merged);
             });
+
+            // Show floating score at merged tile position
+            this.showFloatingScore(tile.value, { x: tile.x, y: tile.y });
         } else {
             classes.push("tile-new");
             this.applyClasses(wrapper, classes);
@@ -326,6 +329,20 @@ export default class HTMLActuator {
 
         // Put the tile on the board
         this.tileContainer.appendChild(wrapper);
+    }
+
+    showFloatingScore(value, position) {
+        const floatEl = document.createElement("div");
+        floatEl.classList.add("floating-score");
+        floatEl.textContent = `+${value}`;
+        floatEl.style.transform = this.getTranslate(position);
+        this.tileContainer.appendChild(floatEl);
+
+        setTimeout(() => {
+            if (floatEl.parentNode) {
+                floatEl.parentNode.removeChild(floatEl);
+            }
+        }, 700);
     }
 
     getTranslate(position) {
@@ -374,11 +391,79 @@ export default class HTMLActuator {
 
         this.clearContainer(this.sharingContainer);
         this.sharingContainer.appendChild(this.scoreTweetButton());
+
+        const mainUndoBtn = document.querySelector(".above-game .undo-button");
+
+        if (won) {
+            this.triggerConfetti();
+            if (mainUndoBtn) mainUndoBtn.classList.remove("pulse-highlight");
+        } else {
+            if (mainUndoBtn) mainUndoBtn.classList.add("pulse-highlight");
+        }
+    }
+
+    triggerConfetti() {
+        const canvas = document.createElement("canvas");
+        canvas.style.position = "fixed";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.width = "100vw";
+        canvas.style.height = "100vh";
+        canvas.style.pointerEvents = "none";
+        canvas.style.zIndex = "9999";
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const colors = ["#edc22e", "#f65e3b", "#f2b179", "#ffcc33", "#60a5fa", "#34d399", "#f472b6"];
+        const particles = Array.from({ length: 90 }, () => ({
+            x: canvas.width / 2,
+            y: canvas.height / 3,
+            vx: (Math.random() - 0.5) * 16,
+            vy: (Math.random() - 0.7) * 16,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rSpeed: (Math.random() - 0.5) * 10,
+            opacity: 1
+        }));
+
+        let frame = 0;
+        const animate = () => {
+            if (frame > 130) {
+                canvas.remove();
+                return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.3;
+                p.rotation += p.rSpeed;
+                p.opacity -= 0.007;
+                if (p.opacity <= 0) return;
+
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.opacity);
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+            });
+            frame++;
+            requestAnimationFrame(animate);
+        };
+        animate();
     }
 
     clearMessage() {
         this.messageContainer.classList.remove("game-won");
         this.messageContainer.classList.remove("game-over");
+        const mainUndoBtn = document.querySelector(".above-game .undo-button");
+        if (mainUndoBtn) mainUndoBtn.classList.remove("pulse-highlight");
     }
 
     setDarkMode(enabled) {
@@ -417,7 +502,7 @@ export default class HTMLActuator {
     scoreTweetButton() {
         const tweet = document.createElement("a");
         tweet.classList.add("twitter-share-button");
-        tweet.setAttribute("href", "https://twitter.com/share");
+        tweet.setAttribute("href", "https://x.com/intent/post");
         tweet.setAttribute("data-url", "https://jet2511.github.io/2048/");
         tweet.textContent = "Tweet";
 
