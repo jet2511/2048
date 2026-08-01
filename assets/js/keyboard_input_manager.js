@@ -90,6 +90,7 @@ export default class KeyboardInputManager {
         this.bindButtonPress(".theme-toggle", this.themeToggle.bind(this));
         this.bindButtonPress(".settings-toggle", this.settingsToggle.bind(this));
         this.bindButtonPress(".mute-toggle", this.muteToggle.bind(this));
+        this.bindButtonPress(".profile-toggle", this.profileToggle.bind(this));
         this.bindButtonPress(".leaderboard-toggle", this.leaderboardToggle.bind(this));
         this.bindButtonPress(".save-load-toggle", this.saveLoadToggle.bind(this));
 
@@ -214,6 +215,11 @@ export default class KeyboardInputManager {
     muteToggle(event) {
         event.preventDefault();
         this.emit("toggleMute");
+    }
+
+    profileToggle(event) {
+        event.preventDefault();
+        this.emit("toggleProfile");
     }
 
     leaderboardToggle(event) {
