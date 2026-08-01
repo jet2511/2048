@@ -109,7 +109,7 @@ body.dark-mode .score-container .score-addition {
     align-items: center;
 }
 
-.settings-toggle, .mute-toggle, .leaderboard-toggle, .save-load-toggle, .undo-button, .restart-button, .size-option, .theme-toggle, .mode-option, .skin-option {
+.settings-toggle, .mute-toggle, .profile-toggle, .leaderboard-toggle, .save-load-toggle, .undo-button, .restart-button, .size-option, .theme-toggle, .mode-option, .skin-option {
     background: var(--button-bg);
     border-radius: 6px;
     padding: 0 20px;
@@ -128,28 +128,28 @@ body.dark-mode .score-container .score-addition {
     white-space: nowrap;
 }
 
-.settings-toggle, .mute-toggle, .leaderboard-toggle, .save-load-toggle {
+.settings-toggle, .mute-toggle, .profile-toggle, .leaderboard-toggle, .save-load-toggle {
     padding: 0 !important;
     width: 44px;
     height: 44px;
     line-height: 44px;
 }
 
-.settings-toggle svg, .mute-toggle svg, .leaderboard-toggle svg, .save-load-toggle svg {
+.settings-toggle svg, .mute-toggle svg, .profile-toggle svg, .leaderboard-toggle svg, .save-load-toggle svg {
     width: 24px;
     height: 24px;
     transition: transform 0.4s ease;
 }
 
-.settings-toggle:hover svg, .mute-toggle:hover svg, .leaderboard-toggle:hover svg, .save-load-toggle:hover svg {
+.settings-toggle:hover svg, .mute-toggle:hover svg, .profile-toggle:hover svg, .leaderboard-toggle:hover svg, .save-load-toggle:hover svg {
     transform: rotate(15deg) scale(1.1);
 }
 
-.settings-toggle:hover, .mute-toggle:hover, .leaderboard-toggle:hover, .save-load-toggle:hover, .undo-button:hover, .restart-button:hover, .size-option:hover, .theme-toggle:hover, .mode-option:hover, .skin-option:hover {
+.settings-toggle:hover, .mute-toggle:hover, .profile-toggle:hover, .leaderboard-toggle:hover, .save-load-toggle:hover, .undo-button:hover, .restart-button:hover, .size-option:hover, .theme-toggle:hover, .mode-option:hover, .skin-option:hover {
     background: var(--button-hover);
 }
 
-.settings-toggle:active, .mute-toggle:active, .leaderboard-toggle:active, .save-load-toggle:active, .undo-button:active, .restart-button:active, .size-option:active, .theme-toggle:active, .mode-option:active, .skin-option:active {
+.settings-toggle:active, .mute-toggle:active, .profile-toggle:active, .leaderboard-toggle:active, .save-load-toggle:active, .undo-button:active, .restart-button:active, .size-option:active, .theme-toggle:active, .mode-option:active, .skin-option:active {
     transform: scale(0.95);
 }
 
@@ -495,3 +495,206 @@ body.dark-mode .slot {
 .close-modal-btn:not(.modal-close-x):hover {
     background: #7f6a56;
 }
+
+/* Profile Modal & Global Leaderboard Styling */
+.profile-modal-content {
+    max-width: 460px;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    border-bottom: 2px solid var(--modal-border);
+    padding-bottom: 8px;
+}
+
+.profile-tabs .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.profile-tabs .tab-btn.active {
+    opacity: 1;
+    background: var(--field-bg);
+    color: var(--tile-gold);
+}
+
+.tab-content {
+    display: none;
+    margin: 16px 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.user-profile-view {
+    padding: 12px 0;
+}
+
+.profile-desc {
+    font-size: 14px;
+    color: var(--text-color);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.google-login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #ffffff;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.google-login-btn:hover {
+    background: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.google-login-btn:active {
+    transform: scale(0.98);
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--field-bg);
+    border-radius: 12px;
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--tile-gold);
+}
+
+.user-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-email {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: var(--text-color);
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sync-status {
+    font-size: 13px;
+    color: #34A853;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.logout-btn {
+    background: #ea4335;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: filter 0.2s;
+}
+
+.logout-btn:hover {
+    filter: brightness(0.9);
+}
+
+.global-leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.global-leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--modal-border);
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.leader-rank {
+    font-weight: bold;
+    width: 28px;
+    color: var(--tile-gold);
+    font-size: 15px;
+}
+
+.leader-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    text-align: left;
+}
+
+.leader-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.leader-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.leader-score {
+    font-weight: bold;
+    font-size: 15px;
+    color: var(--tile-gold);
+}
+

@@ -5,6 +5,9 @@ import ClassicMode from "./modes/classic_mode.js";
 import TimeAttackMode from "./modes/time_attack_mode.js";
 import SurvivalMode from "./modes/survival_mode.js";
 
+import { AuthManager } from "./auth_manager.js";
+import { CloudStorageManager } from "./cloud_storage_manager.js";
+
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager, AudioManager) {
         this.storageManager = new StorageManager();
@@ -16,6 +19,7 @@ export default class GameManager {
         this.inputManager = new InputManager();
         this.actuator = new Actuator();
         this.audioManager = new AudioManager();
+        this.authManager = new AuthManager();
 
         this.startTiles = 2;
         this.history = [];
@@ -34,17 +38,65 @@ export default class GameManager {
         this.inputManager.on("changeLanguage", this.changeLanguage.bind(this));
         this.inputManager.on("toggleSettings", this.toggleSettings.bind(this));
         this.inputManager.on("toggleMute", this.toggleMute.bind(this));
+        this.inputManager.on("toggleProfile", this.toggleProfile.bind(this));
         this.inputManager.on("toggleLeaderboard", this.toggleLeaderboard.bind(this));
-        this.inputManager.on("toggleSaveLoad", this.toggleSaveLoad.bind(this));
         this.inputManager.on("closeModals", this.closeModals.bind(this));
-        this.inputManager.on("saveSlot", this.saveSlot.bind(this));
-        this.inputManager.on("loadSlot", this.loadSlot.bind(this));
 
+        this.setupAuthAndCloudSync();
         this.setup();
         this.applyTheme();
         this.applyLanguage();
         this.actuator.updateSkinHighlight(this.skin);
         this.actuator.updateModeHighlight(this.gameMode);
+    }
+
+    setupAuthAndCloudSync() {
+        this.authManager.onAuthChange(async (user) => {
+            this.actuator.renderAuthState(user);
+            if (user) {
+                const cloudState = await CloudStorageManager.loadGameState(user.uid);
+                if (cloudState && (!this.score || cloudState.score > this.score)) {
+                    this.storageManager.setGameState(cloudState);
+                    this.setup();
+                }
+                const currentBest = this.storageManager.getBestScore(this.size);
+                if (currentBest > 0) {
+                    CloudStorageManager.updateLeaderboard(user.uid, user, currentBest);
+                }
+            }
+        });
+
+        const googleLoginBtn = document.getElementById("googleLoginBtn");
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener("click", async () => {
+                try {
+                    await this.authManager.loginWithGoogle();
+                } catch (err) {
+                    alert(err.message || "Đăng nhập thất bại");
+                }
+            });
+        }
+
+        const googleLogoutBtn = document.getElementById("googleLogoutBtn");
+        if (googleLogoutBtn) {
+            googleLogoutBtn.addEventListener("click", async () => {
+                await this.authManager.logout();
+            });
+        }
+
+        this.actuator.onFetchLeaderboard = async () => {
+            const topUsers = await CloudStorageManager.getTopLeaderboard(20);
+            this.actuator.renderGlobalLeaderboard(topUsers);
+        };
+
+        this.actuator.onFetchLocalLeaderboard = () => {
+            const board = this.storageManager.getLeaderboard();
+            this.actuator.renderLocalLeaderboard(board);
+        };
+    }
+
+    toggleProfile(tab = 'account-tab') {
+        this.actuator.showProfileModal(tab);
     }
 
     createModeStrategy(mode) {
@@ -171,39 +223,11 @@ export default class GameManager {
     }
 
     toggleLeaderboard() {
-        const board = this.storageManager.getLeaderboard();
-        this.actuator.showLeaderboard(board);
-    }
-
-    toggleSaveLoad() {
-        const slotsData = {};
-        [1, 2, 3].forEach(id => {
-            slotsData[id] = this.storageManager.getGameSlotInfo(id);
-        });
-        this.actuator.showSaveLoad(slotsData);
+        this.actuator.showProfileModal("global-leaderboard-tab");
     }
 
     closeModals() {
         this.actuator.closeModals();
-    }
-
-    saveSlot(slotId) {
-        this.storageManager.saveGameSlot(slotId, this.serialize());
-        this.toggleSaveLoad();
-    }
-
-    loadSlot(slotId) {
-        const state = this.storageManager.loadGameSlot(slotId);
-        if (state) {
-            this.storageManager.setGameState(state);
-            if (state.gameMode) {
-                this.storageManager.setItem("gameMode", state.gameMode);
-                this.gameMode = state.gameMode;
-            }
-            this.actuator.closeModals();
-            this.actuator.continueGame(); // Clear won/keep playing messages
-            this.setup();
-        }
     }
 
     // Restart the game
@@ -315,6 +339,13 @@ export default class GameManager {
             this.storageManager.clearGameState();
         } else {
             this.storageManager.setGameState(this.serialize());
+        }
+
+        const currentUser = this.authManager ? this.authManager.getUser() : null;
+        if (currentUser) {
+            const bestScore = this.storageManager.getBestScore(this.size);
+            CloudStorageManager.saveGameState(currentUser.uid, this.serialize());
+            CloudStorageManager.updateLeaderboard(currentUser.uid, currentUser, bestScore);
         }
 
         this.actuator.actuate(this.grid, {

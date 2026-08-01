@@ -12,13 +12,14 @@ export default class HTMLActuator {
         this.messageContainer = document.querySelector(".game-message");
         this.sharingContainer = document.querySelector(".score-sharing");
         this.outerContainer = document.querySelector(".outerContainer");
-        this.leaderboardModal = document.getElementById("leaderboardModal");
         this.saveLoadModal = document.getElementById("saveLoadModal");
+        this.profileModal = document.getElementById("profileModal");
 
         this.score = 0;
         this.size = 4; // Default size
         this.skin = 'classic';
         this.setupConfirmModal();
+        this.setupProfileTabs();
         
         // Listen for window resize to handle responsiveness
         window.addEventListener("resize", () => {
@@ -31,11 +32,105 @@ export default class HTMLActuator {
         });
     }
 
-    // Modal UI logic
-    showLeaderboard(leaderboardData) {
-        const list = this.leaderboardModal.querySelector('.leaderboard-list');
+    setupProfileTabs() {
+        if (!this.profileModal) return;
+        const tabBtns = this.profileModal.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const contents = this.profileModal.querySelectorAll('.tab-content');
+                contents.forEach(c => {
+                    if (c.id === targetTab) {
+                        c.classList.add('active');
+                    } else {
+                        c.classList.remove('active');
+                    }
+                });
+
+                if (targetTab === 'global-leaderboard-tab' && this.onFetchLeaderboard) {
+                    const loading = document.getElementById("leaderboardLoading");
+                    if (loading) loading.style.display = "block";
+                    this.onFetchLeaderboard();
+                } else if (targetTab === 'local-leaderboard-tab' && this.onFetchLocalLeaderboard) {
+                    this.onFetchLocalLeaderboard();
+                }
+            });
+        });
+    }
+
+    showProfileModal(defaultTab = 'account-tab') {
+        this.closeModals();
+        if (this.profileModal) {
+            const tabBtns = this.profileModal.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                if (btn.getAttribute('data-tab') === defaultTab) {
+                    btn.click();
+                }
+            });
+            this.profileModal.classList.add("is-open");
+        }
+    }
+
+    renderAuthState(user) {
+        const unauthView = document.getElementById("userProfileUnauth");
+        const authView = document.getElementById("userProfileAuth");
+        const userAvatar = document.getElementById("userAvatar");
+        const userName = document.getElementById("userName");
+        const userEmail = document.getElementById("userEmail");
+
+        if (!unauthView || !authView) return;
+
+        if (user) {
+            unauthView.style.display = "none";
+            authView.style.display = "block";
+            if (userAvatar) userAvatar.src = user.photoURL || "https://lh3.googleusercontent.com/a/default-user";
+            if (userName) userName.textContent = user.displayName || "Người chơi";
+            if (userEmail) userEmail.textContent = user.email || "";
+        } else {
+            unauthView.style.display = "block";
+            authView.style.display = "none";
+        }
+    }
+
+    renderGlobalLeaderboard(items) {
+        const list = document.getElementById("globalLeaderboardList");
+        const loading = document.getElementById("leaderboardLoading");
+        if (loading) loading.style.display = "none";
+        if (!list) return;
+
+        list.innerHTML = "";
+        if (!items || items.length === 0) {
+            list.innerHTML = `<li class="global-leaderboard-item">Chưa có dữ liệu bảng xếp hạng</li>`;
+            return;
+        }
+
+        items.forEach((item, index) => {
+            const li = document.createElement("li");
+            li.classList.add("global-leaderboard-item");
+            const avatar = item.photoURL || "https://lh3.googleusercontent.com/a/default-user";
+            const name = item.displayName || "Anonymous";
+            const score = item.bestScore || 0;
+
+            li.innerHTML = `
+                <span class="leader-rank">#${index + 1}</span>
+                <div class="leader-user">
+                    <img class="leader-avatar" src="${avatar}" alt="${name}">
+                    <span class="leader-name">${name}</span>
+                </div>
+                <span class="leader-score">${score}</span>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    renderLocalLeaderboard(leaderboardData) {
+        const list = document.getElementById("localLeaderboardList");
+        if (!list) return;
         list.innerHTML = '';
-        if (leaderboardData.length === 0) {
+        if (!leaderboardData || leaderboardData.length === 0) {
             list.innerHTML = `<li>${t('noRecords', this.lang)}</li>`;
         } else {
             leaderboardData.forEach((entry, i) => {
@@ -43,31 +138,11 @@ export default class HTMLActuator {
                 list.innerHTML += `<li><span>#${i+1} - ${date}</span> <strong>${entry.score}</strong></li>`;
             });
         }
-        this.closeModals();
-        this.leaderboardModal.classList.add("is-open");
-    }
-
-    showSaveLoad(slotsData) {
-        const slots = this.saveLoadModal.querySelectorAll('.slot');
-        slots.forEach(slotEl => {
-            const id = slotEl.getAttribute('data-slot');
-            const info = slotsData[id];
-            const infoSpan = slotEl.querySelector('.slot-info');
-            if (info) {
-                const modeName = t(info.mode, this.lang);
-                infoSpan.textContent = t('slotScore', this.lang, id, info.score, modeName);
-            } else {
-                infoSpan.textContent = t('slotEmpty', this.lang, id);
-            }
-        });
-        this.closeModals();
-        this.saveLoadModal.classList.add("is-open");
     }
 
     closeModals() {
-        this.leaderboardModal.classList.remove("is-open");
-        this.saveLoadModal.classList.remove("is-open");
         this.settingsModal.classList.remove("is-open");
+        if (this.profileModal) this.profileModal.classList.remove("is-open");
     }
 
     // --- Settings panel & Modals ---

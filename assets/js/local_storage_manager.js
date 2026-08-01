@@ -96,29 +96,6 @@ export default class LocalStorageManager {
         return JSON.parse(this.storage.getItem(this.noticeClosedKey) || "false");
     }
 
-    // --- SAVE SLOTS ---
-    saveGameSlot(slotId, state) {
-        this.storage.setItem(`saveSlot_${slotId}`, JSON.stringify(state));
-    }
-
-    loadGameSlot(slotId) {
-        try {
-            const stateJSON = this.storage.getItem(`saveSlot_${slotId}`);
-            return stateJSON ? JSON.parse(stateJSON) : null;
-        } catch {
-            return null;
-        }
-    }
-
-    getGameSlotInfo(slotId) {
-        const state = this.loadGameSlot(slotId);
-        if (!state) return null;
-        return {
-            score: state.score,
-            mode: state.gameMode || 'classic'
-        };
-    }
-
     getLanguage() {
         return this.storage.getItem(this.languageKey) || 'vi'; // Default to VI
     }
