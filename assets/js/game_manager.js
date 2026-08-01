@@ -40,10 +40,7 @@ export default class GameManager {
         this.inputManager.on("toggleMute", this.toggleMute.bind(this));
         this.inputManager.on("toggleProfile", this.toggleProfile.bind(this));
         this.inputManager.on("toggleLeaderboard", this.toggleLeaderboard.bind(this));
-        this.inputManager.on("toggleSaveLoad", this.toggleSaveLoad.bind(this));
         this.inputManager.on("closeModals", this.closeModals.bind(this));
-        this.inputManager.on("saveSlot", this.saveSlot.bind(this));
-        this.inputManager.on("loadSlot", this.loadSlot.bind(this));
 
         this.setupAuthAndCloudSync();
         this.setup();
