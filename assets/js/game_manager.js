@@ -1,6 +1,9 @@
 import Grid from "./grid.js";
 import Tile from "./tile.js";
 import { t } from "./i18n.js";
+import ClassicMode from "./modes/classic_mode.js";
+import TimeAttackMode from "./modes/time_attack_mode.js";
+import SurvivalMode from "./modes/survival_mode.js";
 
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager, AudioManager) {
@@ -18,7 +21,7 @@ export default class GameManager {
         this.history = [];
         this.historyLimit = 15;
         this.nextId = 0;
-        this.timerInterval = null;
+        this.modeStrategy = null;
 
         this.inputManager.on("move", this.move.bind(this));
         this.inputManager.on("restart", this.restart.bind(this));
@@ -42,6 +45,34 @@ export default class GameManager {
         this.applyLanguage();
         this.actuator.updateSkinHighlight(this.skin);
         this.actuator.updateModeHighlight(this.gameMode);
+    }
+
+    createModeStrategy(mode) {
+        if (this.modeStrategy) {
+            this.modeStrategy.destroy();
+        }
+
+        const options = {
+            onTimeUpdate: (timeRemaining, modeName) => {
+                this.timeRemaining = timeRemaining;
+                this.actuator.updateTimer(timeRemaining, modeName);
+            },
+            onTimeOut: () => {
+                this.over = true;
+                this.storageManager.addLeaderboard(this.score);
+                this.actuate();
+            }
+        };
+
+        switch (mode) {
+            case "time":
+                return new TimeAttackMode(options);
+            case "survival":
+                return new SurvivalMode(options);
+            case "classic":
+            default:
+                return new ClassicMode(options);
+        }
     }
 
     applyLanguage() {
@@ -196,8 +227,6 @@ export default class GameManager {
 
     // Set up the game
     setup() {
-        if (this.timerInterval) clearInterval(this.timerInterval);
-
         const previousState = this.storageManager.getGameState();
 
         // Reload the game from a previous game if present
@@ -216,19 +245,13 @@ export default class GameManager {
             this.over = false;
             this.won = false;
             this.isKeepPlaying = false;
-            this.timeRemaining = this.gameMode === 'time' ? 60 : (this.gameMode === 'survival' ? 5 : null);
 
             // Add the initial tiles
             this.addStartTiles();
         }
 
-        if (this.gameMode === 'time' || this.gameMode === 'survival') {
-            if (!this.timeRemaining) this.timeRemaining = this.gameMode === 'time' ? 60 : 5;
-            this.startTimer();
-            this.actuator.updateTimer(this.timeRemaining, this.gameMode);
-        } else {
-            this.actuator.updateTimer(null, 'classic');
-        }
+        this.modeStrategy = this.createModeStrategy(this.gameMode);
+        this.modeStrategy.init();
 
         // Update the actuator
         this.actuator.setupGrid(this.size);
@@ -401,9 +424,8 @@ export default class GameManager {
             // but WebAudio can handle overlapping sounds fine)
             this.audioManager.playSlide();
 
-            if (this.gameMode === 'time') {
-                this.timeRemaining = Math.min(60, this.timeRemaining + 1);
-                this.actuator.updateTimer(this.timeRemaining, this.gameMode);
+            if (this.modeStrategy) {
+                this.modeStrategy.onMove(moved);
             }
 
             // Save to history

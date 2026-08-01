@@ -240,6 +240,18 @@ export default class KeyboardInputManager {
         }
     }
 
+    destroy() {
+        if (this.keydownHandler) {
+            document.removeEventListener("keydown", this.keydownHandler);
+        }
+        if (this.gameContainer) {
+            if (this.touchstartHandler) this.gameContainer.removeEventListener(this.eventTouchstart, this.touchstartHandler);
+            if (this.touchmoveHandler) this.gameContainer.removeEventListener(this.eventTouchmove, this.touchmoveHandler);
+            if (this.touchendHandler) this.gameContainer.removeEventListener(this.eventTouchend, this.touchendHandler);
+        }
+        this.events = {};
+    }
+
     targetIsInput(event) {
         return event.target.tagName.toLowerCase() === "input";
     }
