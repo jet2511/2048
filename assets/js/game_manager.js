@@ -91,10 +91,15 @@ export default class GameManager {
             const topUsers = await CloudStorageManager.getTopLeaderboard(20);
             this.actuator.renderGlobalLeaderboard(topUsers);
         };
+
+        this.actuator.onFetchLocalLeaderboard = () => {
+            const board = this.storageManager.getLeaderboard();
+            this.actuator.renderLocalLeaderboard(board);
+        };
     }
 
-    toggleProfile() {
-        this.actuator.showProfileModal();
+    toggleProfile(tab = 'account-tab') {
+        this.actuator.showProfileModal(tab);
     }
 
     createModeStrategy(mode) {
@@ -221,8 +226,7 @@ export default class GameManager {
     }
 
     toggleLeaderboard() {
-        const board = this.storageManager.getLeaderboard();
-        this.actuator.showLeaderboard(board);
+        this.actuator.showProfileModal("global-leaderboard-tab");
     }
 
     toggleSaveLoad() {

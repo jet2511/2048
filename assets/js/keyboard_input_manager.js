@@ -219,12 +219,12 @@ export default class KeyboardInputManager {
 
     profileToggle(event) {
         event.preventDefault();
-        this.emit("toggleProfile");
+        this.emit("toggleProfile", "account-tab");
     }
 
     leaderboardToggle(event) {
         event.preventDefault();
-        this.emit("toggleLeaderboard");
+        this.emit("toggleProfile", "global-leaderboard-tab");
     }
 
     saveLoadToggle(event) {

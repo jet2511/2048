@@ -12,7 +12,6 @@ export default class HTMLActuator {
         this.messageContainer = document.querySelector(".game-message");
         this.sharingContainer = document.querySelector(".score-sharing");
         this.outerContainer = document.querySelector(".outerContainer");
-        this.leaderboardModal = document.getElementById("leaderboardModal");
         this.saveLoadModal = document.getElementById("saveLoadModal");
         this.profileModal = document.getElementById("profileModal");
 
@@ -55,14 +54,24 @@ export default class HTMLActuator {
                     const loading = document.getElementById("leaderboardLoading");
                     if (loading) loading.style.display = "block";
                     this.onFetchLeaderboard();
+                } else if (targetTab === 'local-leaderboard-tab' && this.onFetchLocalLeaderboard) {
+                    this.onFetchLocalLeaderboard();
                 }
             });
         });
     }
 
-    showProfileModal() {
+    showProfileModal(defaultTab = 'account-tab') {
         this.closeModals();
-        if (this.profileModal) this.profileModal.classList.add("is-open");
+        if (this.profileModal) {
+            const tabBtns = this.profileModal.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                if (btn.getAttribute('data-tab') === defaultTab) {
+                    btn.click();
+                }
+            });
+            this.profileModal.classList.add("is-open");
+        }
     }
 
     renderAuthState(user) {
@@ -117,11 +126,11 @@ export default class HTMLActuator {
         });
     }
 
-    // Modal UI logic
-    showLeaderboard(leaderboardData) {
-        const list = this.leaderboardModal.querySelector('.leaderboard-list');
+    renderLocalLeaderboard(leaderboardData) {
+        const list = document.getElementById("localLeaderboardList");
+        if (!list) return;
         list.innerHTML = '';
-        if (leaderboardData.length === 0) {
+        if (!leaderboardData || leaderboardData.length === 0) {
             list.innerHTML = `<li>${t('noRecords', this.lang)}</li>`;
         } else {
             leaderboardData.forEach((entry, i) => {
@@ -129,8 +138,6 @@ export default class HTMLActuator {
                 list.innerHTML += `<li><span>#${i+1} - ${date}</span> <strong>${entry.score}</strong></li>`;
             });
         }
-        this.closeModals();
-        this.leaderboardModal.classList.add("is-open");
     }
 
     showSaveLoad(slotsData) {
@@ -151,7 +158,6 @@ export default class HTMLActuator {
     }
 
     closeModals() {
-        this.leaderboardModal.classList.remove("is-open");
         this.saveLoadModal.classList.remove("is-open");
         this.settingsModal.classList.remove("is-open");
         if (this.profileModal) this.profileModal.classList.remove("is-open");

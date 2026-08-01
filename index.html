@@ -130,6 +130,7 @@
             <div class="profile-tabs">
                 <button class="tab-btn active" data-tab="account-tab">Tài khoản</button>
                 <button class="tab-btn" data-tab="global-leaderboard-tab">BXH Toàn Cầu</button>
+                <button class="tab-btn" data-tab="local-leaderboard-tab">Kỷ Lục Cá Nhân</button>
             </div>
 
             <div class="tab-content active" id="account-tab">
@@ -164,15 +165,10 @@
                 <ul class="global-leaderboard-list" id="globalLeaderboardList"></ul>
             </div>
 
-            <button class="close-modal-btn" data-i18n="close">Close</button>
-        </div>
-    </div>
+            <div class="tab-content" id="local-leaderboard-tab">
+                <ul class="leaderboard-list" id="localLeaderboardList"></ul>
+            </div>
 
-    <div class="modal-overlay" id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
-        <div class="modal-content">
-            <button class="close-modal-btn modal-close-x" aria-label="Close modal">&times;</button>
-            <h2 id="leaderboardTitle" data-i18n="top5">Top 5 High Scores</h2>
-            <ul class="leaderboard-list"></ul>
             <button class="close-modal-btn" data-i18n="close">Close</button>
         </div>
     </div>
