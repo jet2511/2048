@@ -27,3 +27,8 @@ dist-ssr/*
 playwright-report/
 test-result/
 test-results/
+
+# Local Environment Credentials
+.env
+.env.local
+.env.*.local
