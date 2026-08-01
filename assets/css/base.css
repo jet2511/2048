@@ -6,13 +6,22 @@
     --tile-bg: #eee4da;
     --tile-gold: #edc22e;
     
+    --button-bg: #8f7a66;
+    --button-hover: #7f6a56;
+    --button-text: #f9f6f2;
+    --grid-cell-bg: rgba(238, 228, 218, 0.35);
+
     --grid-spacing: 15px;
     --grid-row-cells: 4;
     --game-container-size: 500px;
     --tile-size: 107px;
     --tile-margin: 15px;
-    --transition-speed: 100ms;
+    --transition-speed: 180ms;
     --transition-easing: cubic-bezier(0.25, 1, 0.5, 1);
+
+    --modal-bg: rgba(250, 248, 239, 0.92);
+    --modal-border: rgba(119, 110, 101, 0.18);
+    --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 body.dark-mode {
@@ -21,7 +30,16 @@ body.dark-mode {
     --field-bg: #2c2c2e;
     --tile-bg: #3a3a3c;
     --tile-color: #e0e0e0;
-    --tile-gold: #ffcc33;
+    --tile-gold: #e5b82e;
+
+    --button-bg: #3a3a3c;
+    --button-hover: #4a4a4d;
+    --button-text: #f0f0f0;
+    --grid-cell-bg: rgba(255, 255, 255, 0.06);
+
+    --modal-bg: rgba(26, 26, 28, 0.92);
+    --modal-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
 body {

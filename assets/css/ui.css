@@ -110,14 +110,14 @@ body.dark-mode .score-container .score-addition {
 }
 
 .settings-toggle, .mute-toggle, .leaderboard-toggle, .save-load-toggle, .undo-button, .restart-button, .size-option, .theme-toggle, .mode-option, .skin-option {
-    background: #8f7a66;
-    border-radius: 3px;
+    background: var(--button-bg);
+    border-radius: 6px;
     padding: 0 20px;
-    color: #f9f6f2;
+    color: var(--button-text);
     text-decoration: none;
     cursor: pointer;
     font-weight: bold;
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     border: none;
     height: 42px;
     line-height: 42px;
@@ -130,7 +130,9 @@ body.dark-mode .score-container .score-addition {
 
 .settings-toggle, .mute-toggle, .leaderboard-toggle, .save-load-toggle {
     padding: 0 !important;
-    width: 42px;
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
 }
 
 .settings-toggle svg, .mute-toggle svg, .leaderboard-toggle svg, .save-load-toggle svg {
@@ -144,7 +146,7 @@ body.dark-mode .score-container .score-addition {
 }
 
 .settings-toggle:hover, .mute-toggle:hover, .leaderboard-toggle:hover, .save-load-toggle:hover, .undo-button:hover, .restart-button:hover, .size-option:hover, .theme-toggle:hover, .mode-option:hover, .skin-option:hover {
-    background: #7f6a56;
+    background: var(--button-hover);
 }
 
 .settings-toggle:active, .mute-toggle:active, .leaderboard-toggle:active, .save-load-toggle:active, .undo-button:active, .restart-button:active, .size-option:active, .theme-toggle:active, .mode-option:active, .skin-option:active {
@@ -277,26 +279,27 @@ hr {
     }
 }
 
-/* Custom Confirmation Modal */
+/* Custom Confirmation Modal & Glassmorphism Overlay */
 .confirm-modal, .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .confirm-modal {
-    z-index: 2000; /* Ensure it shows above settings modal */
+    z-index: 2000;
 }
 
 .confirm-modal.is-open, .modal-overlay.is-open {
@@ -305,19 +308,56 @@ hr {
 }
 
 .confirm-content, .modal-content {
-    background: var(--bg-color);
-    padding: 30px;
-    border-radius: 12px;
+    position: relative;
+    background: var(--modal-bg);
+    border: 1px solid var(--modal-border);
+    padding: 32px 28px 24px;
+    border-radius: 16px;
     width: 90%;
-    max-width: 400px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
+    max-width: 420px;
+    box-shadow: var(--glass-shadow);
+    transform: scale(0.92) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .confirm-modal.is-open .confirm-content, .modal-overlay.is-open .modal-content {
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Close X button at top-right */
+.modal-close-x {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    line-height: 30px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-color);
+    font-size: 20px;
+    font-weight: 300;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.modal-close-x:hover {
+    background: rgba(0, 0, 0, 0.16);
+    transform: scale(1.1);
+}
+
+body.dark-mode .modal-close-x {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .modal-close-x:hover {
+    background: rgba(255, 255, 255, 0.24);
 }
 
 .confirm-text {
@@ -374,6 +414,8 @@ body.dark-mode .confirm-button.cancel:hover {
 /* Modals Extra */
 .modal-content h2 {
     margin-top: 0;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--text-color);
 }
 .leaderboard-list {
@@ -383,53 +425,73 @@ body.dark-mode .confirm-button.cancel:hover {
     text-align: left;
 }
 .leaderboard-list li {
-    padding: 10px;
-    border-bottom: 1px solid #d8d4d0;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--modal-border);
     display: flex;
     justify-content: space-between;
     color: var(--text-color);
+    border-radius: 6px;
+}
+.leaderboard-list li:nth-child(even) {
+    background: rgba(0, 0, 0, 0.03);
+}
+body.dark-mode .leaderboard-list li:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
 }
 .save-slots {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     margin: 20px 0;
 }
 .slot {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    background: rgba(0,0,0,0.05);
-    border-radius: 6px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid var(--modal-border);
+    border-radius: 8px;
     color: var(--text-color);
 }
 body.dark-mode .slot {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
 }
 .slot-info {
     flex-grow: 1;
     text-align: left;
+    font-size: 14px;
 }
 .save-btn, .load-btn {
     background: var(--tile-gold);
     border: none;
-    padding: 8px 12px;
-    border-radius: 3px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
     color: white;
-    margin-left: 5px;
+    margin-left: 6px;
     font-family: inherit;
+    transition: filter 0.2s ease, transform 0.1s ease;
 }
-.close-modal-btn {
+.save-btn:hover, .load-btn:hover {
+    filter: brightness(1.1);
+}
+.save-btn:active, .load-btn:active {
+    transform: scale(0.96);
+}
+.close-modal-btn:not(.modal-close-x) {
     background: #8f7a66;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 3px;
+    padding: 10px 24px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 14px;
     font-family: inherit;
+    transition: background 0.2s ease;
+}
+.close-modal-btn:not(.modal-close-x):hover {
+    background: #7f6a56;
 }

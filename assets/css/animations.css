@@ -43,63 +43,80 @@
         transform: scale(0);
     }
     50% {
-        transform: scale(1.2);
+        transform: scale(1.22);
     }
     100% {
         transform: scale(1);
     }
 }
 
-@keyframes pop-in-big {
+@keyframes float-score-up {
     0% {
-        transform: scale(0) translateZ(0);
-        opacity: 0;
-        margin-top: -56px;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: translateY(-25px) scale(1.15);
     }
     100% {
-        transform: scale(1) translateZ(0);
-        opacity: 1;
-        margin-top: 30px;
-    }
-}
-
-@keyframes pop-in-small {
-    0% {
-        transform: scale(0) translateZ(0);
         opacity: 0;
-        margin-top: -76px;
-    }
-    100% {
-        transform: scale(1) translateZ(0);
-        opacity: 1;
-        margin-top: 10px;
+        transform: translateY(-50px) scale(0.9);
     }
 }
 
-.score-container .score-addition {
-    animation: move-up 600ms ease-in both;
+.floating-score {
+    position: absolute;
+    z-index: 100;
+    font-size: 20px;
+    font-weight: 800;
+    color: #edc22e;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    animation: float-score-up 700ms cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
 }
 
-.game-message {
-    animation: fade-in 800ms ease 1200ms both;
-}
-
-.game-message.game-won p,
-.game-message.game-over p {
-    animation: slide-up 1.5s ease-in-out 2500ms both;
-}
-
-.game-message.game-won .message-appendix,
-.game-message.game-over .message-appendix.visible {
-    animation: fade-in 1.5s ease-in-out 2500ms both;
+body.dark-mode .floating-score {
+    color: #ffcc33;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .tile-new .tile-inner {
-    animation: appear 200ms ease 100ms backwards;
+    animation: appear 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275) 100ms backwards;
 }
 
-.tile-merged .tile-inner {
-    animation: pop 200ms ease 100ms backwards;
+@keyframes undo-pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(237, 194, 46, 0.7);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 18px 6px rgba(237, 194, 46, 0.95);
+        transform: scale(1.08);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(237, 194, 46, 0);
+        transform: scale(1);
+    }
+}
+
+.above-game {
+    position: relative;
+    z-index: 105; /* Allow Undo button to stay clickable above game over overlay when highlighted */
+}
+
+.undo-button.pulse-highlight {
+    animation: undo-pulse-glow 1.4s infinite ease-in-out;
+    background: var(--tile-gold) !important;
+    color: #776e65 !important;
+    box-shadow: 0 0 15px rgba(237, 194, 46, 0.8);
+    position: relative;
+    z-index: 110;
+}
+
+body.dark-mode .undo-button.pulse-highlight {
+    background: var(--tile-gold) !important;
+    color: #121213 !important;
 }
 
 .app-notice {
