@@ -221,11 +221,7 @@ export default class GameManager {
     }
 
     toggleSettings() {
-        const slotsData = {};
-        [1, 2, 3].forEach(id => {
-            slotsData[id] = this.storageManager.getGameSlotInfo(id);
-        });
-        this.actuator.toggleSettings(slotsData);
+        this.actuator.toggleSettings();
         this.actuator.updateSizeHighlight(this.size);
     }
 
@@ -233,31 +229,8 @@ export default class GameManager {
         this.actuator.showProfileModal("global-leaderboard-tab");
     }
 
-    toggleSaveLoad() {
-        this.toggleSettings();
-    }
-
     closeModals() {
         this.actuator.closeModals();
-    }
-
-    saveSlot(slotId) {
-        this.storageManager.saveGameSlot(slotId, this.serialize());
-        this.toggleSettings();
-    }
-
-    loadSlot(slotId) {
-        const state = this.storageManager.loadGameSlot(slotId);
-        if (state) {
-            this.storageManager.setGameState(state);
-            if (state.gameMode) {
-                this.storageManager.setItem("gameMode", state.gameMode);
-                this.gameMode = state.gameMode;
-            }
-            this.actuator.closeModals();
-            this.actuator.continueGame(); // Clear won/keep playing messages
-            this.setup();
-        }
     }
 
     // Restart the game

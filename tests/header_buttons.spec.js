@@ -38,12 +38,12 @@ test.describe('Header Toolbar 3-Buttons Consolidation Tests', () => {
     await expect(mutedIcon).toBeVisible();
   });
 
-  test('should open Settings modal with embedded Save/Load slots on ⚙️ button click', async ({ page }) => {
+  test('should open Settings modal on ⚙️ button click', async ({ page }) => {
     await page.locator('.settings-toggle').click();
     const settingsModal = page.locator('#settingsModal');
     await expect(settingsModal).toHaveClass(/is-open/);
 
-    const saveSlots = settingsModal.locator('.save-slots .slot');
-    await expect(saveSlots).toHaveCount(3);
+    const gameSettings = settingsModal.locator('.game-settings');
+    await expect(gameSettings).toBeVisible();
   });
 });

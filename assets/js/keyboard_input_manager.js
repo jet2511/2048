@@ -92,23 +92,10 @@ export default class KeyboardInputManager {
         this.bindButtonPress(".mute-toggle", this.muteToggle.bind(this));
         this.bindButtonPress(".profile-toggle", this.profileToggle.bind(this));
         this.bindButtonPress(".leaderboard-toggle", this.leaderboardToggle.bind(this));
-        this.bindButtonPress(".save-load-toggle", this.saveLoadToggle.bind(this));
 
         this.bindAll(".close-modal-btn", event => {
             event.preventDefault();
             this.emit("closeModals");
-        });
-
-        this.bindAll(".save-btn", event => {
-            event.preventDefault();
-            const slot = event.target.closest('.slot').getAttribute('data-slot');
-            this.emit("saveSlot", slot);
-        });
-
-        this.bindAll(".load-btn", event => {
-            event.preventDefault();
-            const slot = event.target.closest('.slot').getAttribute('data-slot');
-            this.emit("loadSlot", slot);
         });
 
         this.bindAll(".size-option", event => {
@@ -225,11 +212,6 @@ export default class KeyboardInputManager {
     leaderboardToggle(event) {
         event.preventDefault();
         this.emit("toggleProfile", "global-leaderboard-tab");
-    }
-
-    saveLoadToggle(event) {
-        event.preventDefault();
-        this.emit("toggleSaveLoad");
     }
 
     bindAll(selector, fn) {

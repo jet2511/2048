@@ -140,22 +140,6 @@ export default class HTMLActuator {
         }
     }
 
-    showSaveLoad(slotsData) {
-        if (!this.settingsModal || !slotsData) return;
-        const slots = this.settingsModal.querySelectorAll('.slot');
-        slots.forEach(slotEl => {
-            const id = slotEl.getAttribute('data-slot');
-            const info = slotsData[id];
-            const infoSpan = slotEl.querySelector('.slot-info');
-            if (info) {
-                const modeName = t(info.mode, this.lang);
-                infoSpan.textContent = t('slotScore', this.lang, id, info.score, modeName);
-            } else {
-                infoSpan.textContent = t('slotEmpty', this.lang, id);
-            }
-        });
-    }
-
     closeModals() {
         this.settingsModal.classList.remove("is-open");
         if (this.profileModal) this.profileModal.classList.remove("is-open");
@@ -213,9 +197,8 @@ export default class HTMLActuator {
         }
     }
 
-    toggleSettings(slotsData) {
+    toggleSettings() {
         this.closeModals();
-        if (slotsData) this.showSaveLoad(slotsData);
         this.settingsModal.classList.add("is-open");
     }
 
