@@ -3,11 +3,13 @@ import { doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, server
 
 export class CloudStorageManager {
   static async saveGameState(uid, gameState) {
-    if (!initialized || !db || !uid) return;
+    if (!initialized || !db || !uid || !gameState) return;
     try {
       const userRef = doc(db, 'users', uid, 'data', 'game_state');
       await setDoc(userRef, {
-        ...gameState,
+        stateJson: JSON.stringify(gameState),
+        score: gameState.score || 0,
+        gameMode: gameState.gameMode || 'classic',
         updatedAt: serverTimestamp()
       });
     } catch (err) {
@@ -20,7 +22,12 @@ export class CloudStorageManager {
     try {
       const userRef = doc(db, 'users', uid, 'data', 'game_state');
       const docSnap = await getDoc(userRef);
-      return docSnap.exists() ? docSnap.data() : null;
+      if (!docSnap.exists()) return null;
+      const data = docSnap.data();
+      if (data.stateJson) {
+        return JSON.parse(data.stateJson);
+      }
+      return data;
     } catch (err) {
       console.warn("Cloud load error:", err);
       return null;
