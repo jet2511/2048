@@ -219,7 +219,7 @@ export default class HTMLActuator {
     updateSizeHighlight(size) {
         const options = document.querySelectorAll(".size-option");
         options.forEach(opt => {
-            if (parseInt(opt.getAttribute("data-size")) === size) {
+            if (parseInt(opt.getAttribute("data-size"), 10) === parseInt(size, 10)) {
                 opt.classList.add("active");
             } else {
                 opt.classList.remove("active");
