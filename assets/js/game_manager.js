@@ -11,7 +11,8 @@ import { CloudStorageManager } from "./cloud_storage_manager.js";
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager, AudioManager) {
         this.storageManager = new StorageManager();
-        this.size = this.storageManager.getItem("gridSize") || size; // Size of the grid
+        const savedSize = this.storageManager.getItem("gridSize");
+        this.size = savedSize ? parseInt(savedSize, 10) : size; // Size of the grid
         this.gameMode = this.storageManager.getItem("gameMode") || "classic";
         this.skin = this.storageManager.getItem("skin") || "classic";
         this.language = this.storageManager.getLanguage();
