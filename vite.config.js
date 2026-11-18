@@ -6,6 +6,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore']
+        }
+      }
+    }
   },
   plugins: [
     VitePWA({
@@ -33,5 +40,8 @@ export default defineConfig({
         ]
       }
     })
-  ]
+  ],
+  test: {
+    include: ['tests/unit/**/*.{test,spec}.js']
+  }
 });

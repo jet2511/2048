@@ -42,7 +42,7 @@ export default class KeyboardInputManager {
         };
 
         // Respond to direction keys
-        document.addEventListener("keydown", event => {
+        this.keydownHandler = event => {
             const modifiers = event.altKey || event.ctrlKey || event.metaKey ||
                 event.shiftKey;
             const mapped = map[event.key];
@@ -71,15 +71,19 @@ export default class KeyboardInputManager {
             if (event.key === "Escape") {
                 this.emit("closeModals");
             }
-        });
+        };
+        document.addEventListener("keydown", this.keydownHandler);
 
         // Click on modal overlay backdrop closes modal
+        this.backdropHandlers = [];
         document.querySelectorAll(".modal-overlay").forEach(overlay => {
-            overlay.addEventListener("click", event => {
+            const handler = event => {
                 if (event.target === overlay) {
                     this.emit("closeModals");
                 }
-            });
+            };
+            this.backdropHandlers.push({ element: overlay, handler });
+            overlay.addEventListener("click", handler);
         });
 
         // Respond to button presses
@@ -124,9 +128,10 @@ export default class KeyboardInputManager {
 
         // Respond to swipe events
         let touchStartClientX, touchStartClientY;
-        const gameContainer = document.getElementsByClassName("game-container")[0];
+        this.gameContainer = document.getElementsByClassName("game-container")[0];
+        if (!this.gameContainer) return;
 
-        gameContainer.addEventListener(this.eventTouchstart, event => {
+        this.touchstartHandler = event => {
             if (event.touches.length > 1 ||
                 event.targetTouches.length > 1 ||
                 this.targetIsInput(event) ||
@@ -138,13 +143,15 @@ export default class KeyboardInputManager {
             touchStartClientY = event.touches[0].clientY;
 
             event.preventDefault();
-        });
+        };
+        this.gameContainer.addEventListener(this.eventTouchstart, this.touchstartHandler);
 
-        gameContainer.addEventListener(this.eventTouchmove, event => {
+        this.touchmoveHandler = event => {
             event.preventDefault();
-        });
+        };
+        this.gameContainer.addEventListener(this.eventTouchmove, this.touchmoveHandler);
 
-        gameContainer.addEventListener(this.eventTouchend, event => {
+        this.touchendHandler = event => {
             if (event.touches.length > 0 ||
                 event.targetTouches.length > 0 ||
                 this.targetIsInput(event) ||
@@ -171,7 +178,8 @@ export default class KeyboardInputManager {
                 // (right : left) : (down : up)
                 this.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
             }
-        });
+        };
+        this.gameContainer.addEventListener(this.eventTouchend, this.touchendHandler);
     }
 
     restart(event) {
@@ -231,11 +239,21 @@ export default class KeyboardInputManager {
     destroy() {
         if (this.keydownHandler) {
             document.removeEventListener("keydown", this.keydownHandler);
+            this.keydownHandler = null;
+        }
+        if (this.backdropHandlers && this.backdropHandlers.length > 0) {
+            this.backdropHandlers.forEach(({ element, handler }) => {
+                element.removeEventListener("click", handler);
+            });
+            this.backdropHandlers = [];
         }
         if (this.gameContainer) {
             if (this.touchstartHandler) this.gameContainer.removeEventListener(this.eventTouchstart, this.touchstartHandler);
             if (this.touchmoveHandler) this.gameContainer.removeEventListener(this.eventTouchmove, this.touchmoveHandler);
             if (this.touchendHandler) this.gameContainer.removeEventListener(this.eventTouchend, this.touchendHandler);
+            this.touchstartHandler = null;
+            this.touchmoveHandler = null;
+            this.touchendHandler = null;
         }
         this.events = {};
     }

@@ -1,12 +1,15 @@
 import BaseMode from './base_mode.js';
+import { MODE_CONFIG } from '../constants.js';
 
 /**
  * Survival Mode (Short countdown resetting per move)
  */
 export default class SurvivalMode extends BaseMode {
-    init() {
+    init(initialTime) {
         super.init();
-        this.timeRemaining = 15;
+        this.timeRemaining = (typeof initialTime === 'number' && initialTime > 0) 
+            ? initialTime 
+            : MODE_CONFIG.SURVIVAL_INITIAL;
         this.startTimer();
     }
 
@@ -27,7 +30,7 @@ export default class SurvivalMode extends BaseMode {
 
     onMove(moved) {
         if (moved) {
-            this.timeRemaining = 15;
+            this.timeRemaining = MODE_CONFIG.SURVIVAL_INITIAL;
             this.startTimer();
         }
     }
