@@ -125,7 +125,7 @@ export default class GameManager {
         }
 
         this.modeStrategy = this.createModeStrategy(this.gameMode);
-        this.modeStrategy.init();
+        this.modeStrategy.init(this.timeRemaining);
 
         this.actuator.setupGrid(this.size);
         this.actuator.updateSizeHighlight(this.size);
@@ -305,10 +305,13 @@ export default class GameManager {
             }
         });
 
-        this.score = Math.max(0, this.score - GRID_CONFIG.UNDO_PENALTY);
+        this.score = Math.max(0, state.score - GRID_CONFIG.UNDO_PENALTY);
         this.over = state.over;
         this.won = state.won;
         this.isKeepPlaying = state.isKeepPlaying;
+        if (typeof state.timeRemaining === 'number') {
+            this.timeRemaining = state.timeRemaining;
+        }
 
         this.actuate();
     }

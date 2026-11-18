@@ -108,7 +108,9 @@ export class BoardRenderer {
         const floatEl = document.createElement("div");
         floatEl.className = "floating-score";
         floatEl.textContent = `+${value}`;
-        floatEl.style.transform = this.getTranslate(position);
+        const { x, y } = position;
+        floatEl.style.left = `calc(${x} * (var(--tile-size) + var(--tile-margin)) + var(--tile-margin) + var(--tile-size) / 2)`;
+        floatEl.style.top = `calc(${y} * (var(--tile-size) + var(--tile-margin)) + var(--tile-margin) + var(--tile-size) / 2)`;
         this.tileContainer.appendChild(floatEl);
 
         setTimeout(() => {

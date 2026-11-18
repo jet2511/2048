@@ -2,6 +2,10 @@
  * Centralized Game Constants & Configurations
  */
 
+export const SYNC_CONFIG = Object.freeze({
+    DEBOUNCE_MS: 3000
+});
+
 export const GRID_CONFIG = Object.freeze({
     DEFAULT_SIZE: 4,
     MIN_SIZE: 3,

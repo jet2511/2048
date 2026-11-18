@@ -70,4 +70,30 @@ describe('Game Modes Strategy Logic', () => {
 
         mode.destroy();
     });
+
+    it('TimeAttackMode should resume from initialTime if provided', () => {
+        const onTimeUpdate = vi.fn();
+        const mode = new TimeAttackMode({ onTimeUpdate });
+        mode.init(42);
+
+        expect(mode.timeRemaining).toBe(42);
+        expect(onTimeUpdate).toHaveBeenCalledWith(42, 'time');
+
+        vi.advanceTimersByTime(2000);
+        expect(mode.timeRemaining).toBe(40);
+        mode.destroy();
+    });
+
+    it('SurvivalMode should resume from initialTime if provided', () => {
+        const onTimeUpdate = vi.fn();
+        const mode = new SurvivalMode({ onTimeUpdate });
+        mode.init(9);
+
+        expect(mode.timeRemaining).toBe(9);
+        expect(onTimeUpdate).toHaveBeenCalledWith(9, 'survival');
+
+        vi.advanceTimersByTime(3000);
+        expect(mode.timeRemaining).toBe(6);
+        mode.destroy();
+    });
 });

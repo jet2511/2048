@@ -16,8 +16,9 @@ export default class BaseMode {
 
     /**
      * Initialize the mode
+     * @param {number} [initialTime] Optional saved time remaining to resume
      */
-    init() {
+    init(initialTime) {
         this.stopTimer();
     }
 

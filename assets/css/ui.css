@@ -76,16 +76,19 @@ h1.title .title-link-shade {
 
 .score-container .score-addition {
     position: absolute;
-    right: 30px;
+    right: 25px;
     font-size: 25px;
     line-height: 25px;
     font-weight: bold;
     color: rgba(119, 110, 101, 0.9);
     z-index: 100;
+    pointer-events: none;
+    animation: move-up 600ms ease-in forwards;
 }
 
 body.dark-mode .score-container .score-addition {
-    color: rgba(224, 224, 224, 0.9);
+    color: rgba(237, 194, 46, 0.95);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .above-game {

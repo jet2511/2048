@@ -1,12 +1,14 @@
 import BaseMode from './base_mode.js';
+import { MODE_CONFIG } from '../constants.js';
 
 /**
  * Time Attack Mode (60s timer + 1s bonus per move)
  */
 export default class TimeAttackMode extends BaseMode {
-    init() {
+    init(initialTime) {
         super.init();
-        this.timeRemaining = 60;
+        const maxTime = MODE_CONFIG.TIME_ATTACK_INITIAL;
+        this.timeRemaining = (typeof initialTime === 'number' && initialTime > 0) ? initialTime : maxTime;
         this.onTimeUpdate(this.timeRemaining, 'time');
 
         this.timer = setInterval(() => {
@@ -22,7 +24,8 @@ export default class TimeAttackMode extends BaseMode {
 
     onMove(moved) {
         if (moved && this.timeRemaining > 0) {
-            this.timeRemaining = Math.min(60, this.timeRemaining + 1);
+            const maxTime = MODE_CONFIG.TIME_ATTACK_INITIAL;
+            this.timeRemaining = Math.min(maxTime, this.timeRemaining + MODE_CONFIG.TIME_ATTACK_BONUS);
             this.onTimeUpdate(this.timeRemaining, 'time');
         }
     }
